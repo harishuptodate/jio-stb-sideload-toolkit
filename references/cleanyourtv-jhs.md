@@ -13,6 +13,7 @@ The verified adaptation provides:
 - Android TV Network settings from the Wi-Fi button;
 - Jio stock Settings as **Native settings** in the Settings long-press menu;
 - the launcher's normal animations;
+- available RAM and free storage displayed under the clock by default, with an on-screen toggle in Launcher settings;
 - Monet retained for immediate rollback.
 
 The measured launcher memory was about 45 MB PSS during the initial comparison and about 66 MB PSS after the final reboot, versus about 84 MB PSS observed for Monet. Treat these as observations from one box, not a general performance guarantee.
@@ -74,6 +75,10 @@ Read the CleanYourTV repository's `AGENTS.md` before editing. Make only these JH
 
 5. Enable `app_library` and preload `com.jio.mymusic.app` in `library_apps`. MyMusic has a normal launcher activity but no Leanback launcher activity; without the preload, CleanYourTV skips it and fills its dock slot with another app.
 6. Leave `reduced_motion` false unless the user explicitly prefers reduced animation. The verified owner preferred the normal animation.
+7. Configure the system stats line to show available RAM and free storage by default, with an on-screen toggle:
+   - In `config.xml`, set `show_stats` to `true` by default (`<bool name="show_stats">true</bool>`).
+   - In `MainActivity.java` (`readStatsLine()`) and `strings.xml`, report available RAM (`Memory %1$d MB free / %2$d MB`) and free storage (`Storage %1$s free`).
+   - In `LauncherSettingsActivity.java`, `activity_launcher_settings.xml`, and `Config.java` (`SHOW_STATS_KEY`), add a **RAM and storage** toggle switch so users can toggle the stats line on or off on-screen without rebuilding.
 
 Do not add Internet access, new dependencies, binaries, or a JHS debloat list derived from the JMS example.
 
@@ -106,6 +111,8 @@ Verify by observed resumed components, then cold-boot once:
 - Wi-Fi resumes `com.android.tv.settings/.connectivity.NetworkActivity`;
 - all four dock apps open, including `com.jio.mymusic.app/com.jio.mymusic.ui.WelcomeActivity`;
 - long-press Settings contains **Native settings** and it opens Jio Settings;
+- the stats line under the clock displays available RAM and free storage (e.g. Memory 741 MB free / 1959 MB · Storage 1.6 GB free);
+- the **RAM and storage** toggle in Launcher settings switches the line off/on and persists across launcher restarts;
 - physical remote navigation, volume, idle wake, and Home work;
 - ADB reconnects and no launcher ANR/crash loop appears after reboot.
 
