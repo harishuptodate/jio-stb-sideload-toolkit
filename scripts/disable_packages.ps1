@@ -38,6 +38,7 @@ $optional = @(
     'com.jio.myhome.mediasharedmp',
     'com.jio.yt',
     'com.jio.myjiotv',
+    'com.android.app.jio.voiceassist',
     'com.jio.media.jiotvplus',
     'com.jio.jiopay',
     'com.etvwin.androidtv',
