@@ -50,6 +50,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -929,8 +930,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnReorder.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
+        makeIconOnly((TextView) btnSettings);
+        applyWifiPill(false);
+        applyBluetoothPill(false);
         if (advancedEffects) {
-            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnBluetooth, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnVpn, btnReorder, btnLibraryTop, btnSettings));
             pills.addAll(topAppButtons);
             for (View button : pills) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
@@ -938,6 +942,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         .setDuration(reducedMotion ? Motion.REDUCED_MS : 160).start());
             }
         }
+        btnWifi.setOnFocusChangeListener((view, focused) -> {
+            if (advancedEffects) view.animate().scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
+                    .setDuration(reducedMotion ? Motion.REDUCED_MS : 160).start();
+            applyWifiPill(focused);
+        });
+        btnBluetooth.setOnFocusChangeListener((view, focused) -> {
+            if (advancedEffects) view.animate().scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
+                    .setDuration(reducedMotion ? Motion.REDUCED_MS : 160).start();
+            applyBluetoothPill(focused);
+        });
         if (festive) applyFestiveSkin((TextView) btnInputs, (TextView) btnSettings);
 
         // Hide the glass when focus leaves the tiles.
@@ -2289,14 +2303,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // at any moment without the reader tripping over it.
         Handler bg = new Handler(statsThread.getLooper());
         statsBg = bg;
-        bg.post(new Runnable() {
+                bg.post(new Runnable() {
             @Override
             public void run() {
                 if (statsBg != bg) return;
-                String line = readStatsLine();
-                handler.post(() -> {
-                    if (showStats && stats != null && statsBg == bg) stats.setText(line);
-                });
+                RawStats raw = readRawStats();
+                if (raw != null) {
+                    handler.post(() -> {
+                        if (showStats && stats != null && statsBg == bg) stats.setText(buildStatsLine(raw));
+                    });
+                }
                 if (statsBg == bg) bg.postDelayed(this, STATS_MS);
             }
         });
@@ -2313,32 +2329,79 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!showStats) stats.setVisibility(View.GONE);
     }
 
-    /** One quiet line, e.g. "CPU 8%  ·  Memory 430 MB free  ·  Storage 3.1 GB free". Runs off the main thread. */
-    private static void appendStat(StringBuilder line, String part) {
-        if (line.length() > 0) line.append("  ·  ");
-        line.append(part);
+    private static class RawStats {
+        final int cpu;
+        final long[] mem;
+        final String free;
+        RawStats(int cpu, long[] mem, String free) {
+            this.cpu = cpu;
+            this.mem = mem;
+            this.free = free;
+        }
     }
 
-    private String readStatsLine() {
+    private RawStats readRawStats() {
         int cpu = cpuPercent();
         if (cpu < 0) {
             try {
                 Thread.sleep(200);             // second sample, so the first line already has a CPU figure
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                return "";
+                return null;
             }
             cpu = cpuPercent();
         }
-        // Android 8 and later hide /proc/stat from apps on many TVs: then the line leaves CPU out rather than
-        // showing a dash that never fills in.
-        StringBuilder line = new StringBuilder();
-        if (cpu >= 0) line.append(getString(R.string.stats_cpu, cpu));
         long[] mem = memUsedOfTotalMb();
-        if (mem != null) appendStat(line, getString(R.string.stats_memory, mem[1] - mem[0], mem[1]));
         String free = formatGb(getResources(), Environment.getDataDirectory().getFreeSpace());
-        if (!free.isEmpty()) appendStat(line, getString(R.string.stats_storage, free));
-        return StatsText.forLocale(line.toString(), getResources().getConfiguration().getLocales().get(0));
+        return new RawStats(cpu, mem, free);
+    }
+
+    private CharSequence buildStatsLine(RawStats raw) {
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        int iconSize = Math.round(14 * density);
+
+        // CPU
+        if (raw.cpu >= 0) {
+            Drawable cpuIcon = getDrawable(R.drawable.ic_stat_cpu);
+            if (cpuIcon != null) {
+                cpuIcon.mutate();
+                cpuIcon.setBounds(0, 0, iconSize, iconSize);
+                sb.append(" ");
+                sb.setSpan(new CenteredImageSpan(cpuIcon), sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.append(" ");
+            }
+            sb.append(raw.cpu + "%");
+        }
+
+        // Memory
+        if (raw.mem != null) {
+            if (sb.length() > 0) sb.append("   \u2022   ");
+            Drawable memIcon = getDrawable(R.drawable.ic_stat_memory);
+            if (memIcon != null) {
+                memIcon.mutate();
+                memIcon.setBounds(0, 0, iconSize, iconSize);
+                sb.append(" ");
+                sb.setSpan(new CenteredImageSpan(memIcon), sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.append(" ");
+            }
+            sb.append((raw.mem[1] - raw.mem[0]) + " MB free / " + raw.mem[1] + " MB");
+        }
+
+        // Storage
+        if (raw.free != null && !raw.free.isEmpty()) {
+            if (sb.length() > 0) sb.append("   \u2022   ");
+            Drawable storageIcon = getDrawable(R.drawable.ic_stat_storage);
+            if (storageIcon != null) {
+                storageIcon.mutate();
+                storageIcon.setBounds(0, 0, iconSize, iconSize);
+                sb.append(" ");
+                sb.setSpan(new CenteredImageSpan(storageIcon), sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.append(" ");
+            }
+            sb.append(raw.free + " free");
+        }
+
+        return sb;
     }
 
     // -1: need another sample. -2: this source cannot be read (Android 9 hides /proc/stat from apps).
@@ -3024,14 +3087,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             text = stub || icon == R.drawable.ic_ethernet ? "" : name;
             SpannableString label = new SpannableString(text + " " + badge);
             label.setSpan(span, text.length() + 1, label.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            if (!TextUtils.equals(btnWifi.getText(), label)) btnWifi.setText(label);
-        } else if (!TextUtils.equals(btnWifi.getText(), text)) {
-            btnWifi.setText(text);
+            mWifiLabel = label;
+        } else {
+            mWifiLabel = text;
         }
-        if (wifiIconOnly) {
-            btnWifi.setContentDescription(btnWifi.getText());
-            btnWifi.setText(null);
-        }
+        mWifiConnected = online;
+        applyWifiPill(btnWifi.hasFocus());
         if (festive && lamp != null) {
             if (online && flame == 0) flame = 3;   // online some other way (cellular, USB tethering)
             lamp.setSteady(steady);
@@ -3054,10 +3115,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @SuppressWarnings({"MissingPermission", "JavaReflectionMemberAccess"})
     private void updateBluetoothLabel() {
         String label = getString(R.string.bluetooth);
+        boolean isConnected = false;
         try {
             BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
             if (adapter == null || !adapter.isEnabled()) {
-                btnBluetooth.setText(label);
+                mBtConnected = false;
+                mBtLabel = label;
+                applyBluetoothPill(btnBluetooth.hasFocus());
                 return;
             }
             java.util.Set<BluetoothDevice> bonded = adapter.getBondedDevices();
@@ -3072,16 +3136,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                             && adapter.getProfileConnectionState(4) == BluetoothAdapter.STATE_CONNECTED;
                 }
                 if (!connected) continue;
+                isConnected = true;
                 String name = device.getName();
                 if (!TextUtils.isEmpty(name)) label = name;
                 break;
             }
         } catch (Exception ignored) {
         }
-        btnBluetooth.setText(label);
+        mBtConnected = isConnected;
+        mBtLabel = label;
+        applyBluetoothPill(btnBluetooth.hasFocus());
     }
 
     /** config.xml icon_only_buttons. */
+    private boolean mWifiConnected = false;
+    private CharSequence mWifiLabel = "";
+    private boolean mBtConnected = false;
+    private String mBtLabel = "";
     private boolean iconOnlyButtons;
     /** config.xml top_menu: Inputs, Wi-Fi and Settings folded into one gear. */
     private boolean topMenu;
@@ -3102,6 +3173,50 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean libraryFromVpnPill;
 
     /** Turns a labelled top pill into the round TopButtonIcon shape: no text, the icon centred by even padding. */
+    private void applyWifiPill(boolean hasFocus) {
+        if (btnWifi == null) return;
+        btnWifi.setBackgroundResource(mWifiConnected ? R.drawable.pill_bg_connected : R.drawable.pill_bg_disconnected);
+        ViewGroup.LayoutParams lp = btnWifi.getLayoutParams();
+        if (hasFocus) {
+            btnWifi.setText(mWifiLabel);
+            int padStart = Math.round(14 * density);
+            int padEnd = Math.round(18 * density);
+            btnWifi.setPaddingRelative(padStart, 0, padEnd, 0);
+            btnWifi.setCompoundDrawablePadding(Math.round(8 * density));
+            if (lp != null) lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        } else {
+            btnWifi.setContentDescription(mWifiLabel);
+            btnWifi.setText(null);
+            int pad = Math.round(10 * density);
+            btnWifi.setPaddingRelative(pad, 0, pad, 0);
+            btnWifi.setCompoundDrawablePadding(0);
+            if (lp != null) lp.width = Math.round(42 * density);
+        }
+        btnWifi.requestLayout();
+    }
+
+    private void applyBluetoothPill(boolean hasFocus) {
+        if (btnBluetooth == null) return;
+        btnBluetooth.setBackgroundResource(mBtConnected ? R.drawable.pill_bg_connected : R.drawable.pill_bg_disconnected);
+        ViewGroup.LayoutParams lp = btnBluetooth.getLayoutParams();
+        if (hasFocus) {
+            btnBluetooth.setText(mBtLabel);
+            int padStart = Math.round(14 * density);
+            int padEnd = Math.round(18 * density);
+            btnBluetooth.setPaddingRelative(padStart, 0, padEnd, 0);
+            btnBluetooth.setCompoundDrawablePadding(Math.round(8 * density));
+            if (lp != null) lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        } else {
+            btnBluetooth.setContentDescription(mBtLabel);
+            btnBluetooth.setText(null);
+            int pad = Math.round(10 * density);
+            btnBluetooth.setPaddingRelative(pad, 0, pad, 0);
+            btnBluetooth.setCompoundDrawablePadding(0);
+            if (lp != null) lp.width = Math.round(42 * density);
+        }
+        btnBluetooth.requestLayout();
+    }
+
     private void makeIconOnly(TextView pill) {
         pill.setContentDescription(pill.getText());
         pill.setText(null);
