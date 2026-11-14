@@ -43,6 +43,8 @@ $stockDisabled = [bool]((& $adb -s $Target shell pm list packages -d com.iwedia.
 if ($PSCmdlet.ShouldProcess($Target, 'Install CleanYourTV and select it as Home')) {
     & $adb -s $Target install -r $apk
     if ($LASTEXITCODE -ne 0) { throw 'ADB failed to install CleanYourTV.' }
+    & $adb -s $Target shell pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>$null
+    & $adb -s $Target shell pm grant com.gathin.tvhome android.permission.ACCESS_COARSE_LOCATION 2>$null
     & $adb -s $Target shell am start -W -n com.gathin.tvhome/.MainActivity
     if ($LASTEXITCODE -ne 0) { throw 'CleanYourTV did not launch.' }
     if ($DisableStockLauncher) {
