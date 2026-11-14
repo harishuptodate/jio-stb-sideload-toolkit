@@ -1,0 +1,12 @@
+.state/
+__pycache__/
+*.pyc
+*.log
+*.pem
+*.key
+*.crt
+*.apk
+adb.exe
+AdbWinApi.dll
+AdbWinUsbApi.dll
+device-baseline-*/

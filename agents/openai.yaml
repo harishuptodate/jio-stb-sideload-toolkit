@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jio STB Clean Setup"
+  short_description: "Safely enable ADB and debloat supported Jio STBs"
+  default_prompt: "Use $jiostb-clean-setup to prepare, diagnose, and configure my supported Jio STB with reversible changes."
