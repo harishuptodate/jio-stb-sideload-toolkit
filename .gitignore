@@ -10,3 +10,16 @@ adb.exe
 AdbWinApi.dll
 AdbWinUsbApi.dll
 device-baseline-*/
+launcher/.gradle/
+launcher/app/build/
+
+# Verified standalone runtime assets intentionally shipped by this repository.
+!adb.exe
+!AdbWinApi.dll
+!AdbWinUsbApi.dll
+!tls/acs.crt
+!tls/acs.key
+!tls/acs.pem
+!tls/acs_chain.pem
+!tls/forged_chain.pem
+!tls/rilrootca.pem

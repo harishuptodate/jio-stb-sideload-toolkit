@@ -1,5 +1,13 @@
 Jio STB Clean Setup
 Copyright 2026 Jio STB Clean Setup contributors
 
-The diagnostic recorder and portions of the workflow were adapted from the
-sideload-jiostb project, which is licensed under the Apache License 2.0.
+The diagnostic recorder, TLS proxy assets, and portions of the workflow were
+adapted from the sideload-jiostb project, Copyright 2026 Otus9051/JFC Group,
+under the Apache License 2.0. Its license and notice are in third_party/.
+
+The launcher directory contains a modified copy of CleanYourTV, Copyright
+2026 Gathin, under the MIT License. The license is in third_party/.
+
+The bundled Android Debug Bridge executables are Android SDK Platform-Tools
+components distributed by Google. Their applicable upstream license terms
+remain in effect; see https://developer.android.com/tools/releases/platform-tools.

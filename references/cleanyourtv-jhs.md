@@ -1,6 +1,6 @@
 # CleanYourTV on verified JHSC200
 
-This optional workflow was verified on JHSC200 v1, Android 11, firmware `STB-JHSC200-11.3.46`. It builds [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv) from source and keeps Monet installed as the recovery Home. Revalidate after a firmware or upstream launcher change.
+This optional workflow was verified on JHSC200 v1, Android 11, firmware `STB-JHSC200-11.3.46`. This repository includes a modified copy of [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv), so no second checkout is required. Revalidate after a firmware or launcher source change.
 
 CleanYourTV package: `com.gathin.tvhome`. It has no Internet permission and no native libraries. Do not run `examples/jio-stb-c200a/debloat.txt` on JHS: that list was contributed for a JMS C200A and does not establish that its package choices are safe on JHS.
 
@@ -14,7 +14,7 @@ The verified adaptation provides:
 - Jio stock Settings as **Native settings** in the Settings long-press menu;
 - the launcher's normal animations;
 - available RAM and free storage displayed under the clock by default, with an on-screen toggle in Launcher settings;
-- Monet retained for immediate rollback.
+- the previous Home component recorded before installation for rollback.
 
 The measured launcher memory was about 45 MB PSS during the initial comparison and about 66 MB PSS after the final reboot, versus about 84 MB PSS observed for Monet. Treat these as observations from one box, not a general performance guarantee.
 
@@ -28,14 +28,14 @@ Require working persistent ADB and capture a baseline first. Resolve the current
 & $Adb -s $Target shell pm list packages -d
 ```
 
-Keep this rollback command ready, substituting the actual Monet component if discovery reports a different one:
+The installer records the current Home component in `.state/launcher-before-*.json`. Keep that component available for rollback. On a stock JHS installation, also keep the Jio launcher enabled until CleanYourTV has survived a reboot.
 
 ```powershell
-& $Adb -s $Target shell cmd package set-home-activity --user 0 com.klevico.monet/.HomeActivity
+& $Adb -s $Target shell cmd package set-home-activity --user 0 '<saved package/activity>'
 & $Adb -s $Target shell am start -a android.intent.action.MAIN -c android.intent.category.HOME
 ```
 
-Do not uninstall Monet or Jio Settings. Keep `com.rjil.jiostbsetting`, `com.android.tv.settings`, remote/Bluetooth services, and the already verified remote repair state enabled as documented elsewhere in this skill.
+Do not uninstall the previous launcher or Jio Settings during initial verification. Keep `com.rjil.jiostbsetting`, `com.android.tv.settings`, remote/Bluetooth services, and the already verified remote repair state enabled as documented elsewhere in this skill.
 
 ## Discover settings before adapting
 
@@ -55,7 +55,7 @@ Test components with `am start -W -n COMPONENT` and confirm `mResumedActivity` b
 
 ## Source adaptation
 
-Read the CleanYourTV repository's `AGENTS.md` before editing. Make only these JHS-scoped changes:
+The bundled source already contains these JHS-scoped changes:
 
 1. Add `com.rjil.jiostbsetting` to the manifest's `<queries>` packages.
 2. Add `com.rjil.jiostbsetting/com.rjil.jiostbsetting.MainActivity` first in `settings_fallback_components`. This exposes Jio Settings as **Native settings**.
@@ -84,23 +84,21 @@ Do not add Internet access, new dependencies, binaries, or a JHS debloat list de
 
 ## Build and install
 
-When local JDK/SDK versions do not match the project, use the repository's Docker builder:
+Use the standalone installer. It runs unit tests, lint, and the release build in Docker before installing the APK:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+& .\scripts\build_install_launcher.ps1 -Target '192.168.1.8:5555'
+```
+
+The script requires the APK to remain below the repository's 589,824-byte gate, saves the existing Home in `.state`, installs the APK, selects CleanYourTV as Home, and verifies the resolved Home. For build-only verification, run:
+
+```powershell
 & .\tools\docker-build.ps1 -Project launcher `
   -Tasks @('testReleaseUnitTest','lintRelease','assembleRelease')
 ```
 
-Require unit tests, lint, and the release build to pass. Confirm the APK stays below the repository's 589,824-byte gate. Install the resulting APK, select it as Home, and bring Home forward:
-
-```powershell
-& $Adb -s $Target install -r .\launcher\app\build\outputs\apk\release\app-release.apk
-& $Adb -s $Target shell cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity
-& $Adb -s $Target shell am start -a android.intent.action.MAIN -c android.intent.category.HOME
-```
-
-Installing a second Home claimant may temporarily show Android's resolver. Reissue the intended `set-home-activity` command immediately. Do not disable Monet.
+Installing a second Home claimant may temporarily show Android's resolver. Re-run the installer with `-SkipBuild` if the intended Home was not retained. Use `-DisableStockLauncher` only after the new Home has been tested and its saved rollback component is known.
 
 ## Verification and rollback
 
@@ -118,4 +116,4 @@ Verify by observed resumed components, then cold-boot once:
 
 ADB key injection verifies routing but does not reproduce Bluetooth remote timing; require a short physical-remote check before declaring completion.
 
-Rollback to Monet with the saved command. If Home resolution becomes ambiguous, explicitly start Monet and re-run `set-home-activity`. Leave CleanYourTV installed until Monet has survived a reboot; uninstalling it is optional only after recovery is proven.
+Rollback with the component saved in `.state/launcher-before-*.json`. Re-enable `com.iwedia.ui.rjio.launcher.reliance` first if the installer disabled it, set the saved component as Home, and press Home. Leave CleanYourTV installed until the restored launcher has survived a reboot; uninstalling it is optional after recovery is proven.

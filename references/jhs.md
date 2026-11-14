@@ -5,7 +5,7 @@ Verified on firmware `STB-JHSC200-11.3.46`. Revalidate after any firmware change
 ## Model-specific facts
 
 - ACS request path: `/ftacs-digest/ACS`
-- Accepted proxy chain in the source checkout: `tls/forged_chain.pem`
+- Accepted bundled proxy chain: `tls/forged_chain.pem`
 - ADB parameters:
   - `Device.JioSTB.USB.USBDebugging = true` as `xsd:boolean`
   - `Device.JioSTB.USB.DebugValidityDate = 2037-01-01T00:00:00.000Z` as `xsd:dateTime`
@@ -19,15 +19,15 @@ The default `acs_chain.pem` failed on the verified JHS box with `TLSV1_ALERT_UNK
 Use PowerShell from this skill repository:
 
 ```powershell
-.\scripts\start_proxy.ps1 -SourceRepo C:\path\to\sideload-jiostb -Model JHS
-python .\scripts\offline_watch.py --source-repo C:\path\to\sideload-jiostb --stb-ip 192.168.1.128
+.\scripts\start_proxy.ps1 -Model JHS
+python .\scripts\offline_watch.py --stb-ip 192.168.1.128
 ```
 
 Do not disconnect WAN until the recorder says `READY`. The first offline cold boot establishes the real STB check-in. Queue the two ADB parameters while WAN is restored, then do a second offline cold boot to collect them.
 
 ## Connect ADB
 
-From the source checkout:
+From this repository:
 
 ```bash
 ./adb.exe connect 192.168.1.128:5555
@@ -38,38 +38,20 @@ Accept the RSA prompt on the TV. The final command must print `device`. Internet
 
 ## Replacement launcher
 
-For the verified CleanYourTV adaptation, including direct access to Android TV Settings while retaining Jio Settings and Monet rollback, follow [cleanyourtv-jhs.md](cleanyourtv-jhs.md).
+Follow [cleanyourtv-jhs.md](cleanyourtv-jhs.md), then run the bundled builder/installer:
 
-Install the launcher APK from the authorized source checkout. The verified package was `com.klevico.monet`:
-
-```bash
-./adb.exe -s 192.168.1.128:5555 install -r monet-launcher.apk
-./adb.exe -s 192.168.1.128:5555 shell monkey -p com.klevico.monet -c android.intent.category.LEANBACK_LAUNCHER 1
+```powershell
+.\scripts\build_install_launcher.ps1 -Target 192.168.1.128:5555
 ```
 
-On the verified JHS firmware, `cmd package set-home-activity` returned success but the stock launcher reclaimed Home. After confirming Monet launches, use the reversible workaround:
-
-```bash
-./adb.exe -s 192.168.1.128:5555 shell pm disable-user --user 0 com.iwedia.ui.rjio.launcher.reliance
-./adb.exe -s 192.168.1.128:5555 shell cmd package set-home-activity com.klevico.monet/.MainActivity
-./adb.exe -s 192.168.1.128:5555 shell monkey -p com.klevico.monet -c android.intent.category.LEANBACK_LAUNCHER 1
-./adb.exe -s 192.168.1.128:5555 shell input keyevent HOME
-```
-
-If the component name differs, query it before setting Home:
-
-```bash
-./adb.exe -s 192.168.1.128:5555 shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME com.klevico.monet
-```
+On verified JHS, the stock launcher may reclaim Home. Test CleanYourTV first, then rerun with `-SkipBuild -DisableStockLauncher`. This disables the stock package only for user 0 and saves rollback state; it does not uninstall it.
 
 Rollback:
 
 ```bash
-./adb.exe -s 192.168.1.128:5555 shell pm enable com.iwedia.ui.rjio.launcher.reliance
-./adb.exe -s 192.168.1.128:5555 shell input keyevent HOME
+.\adb.exe -s 192.168.1.128:5555 shell pm enable com.iwedia.ui.rjio.launcher.reliance
+.\adb.exe -s 192.168.1.128:5555 shell input keyevent HOME
 ```
-
-Shevery is optional and was not required for persistent ADB on the verified box.
 
 ## Verification gate
 

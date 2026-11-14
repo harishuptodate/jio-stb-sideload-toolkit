@@ -1,12 +1,11 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory)] [string] $SourceRepo,
     [Parameter(Mandatory)] [ValidateSet('JHS', 'JMS')] [string] $Model,
     [string] $Python = 'python'
 )
 
 $ErrorActionPreference = 'Stop'
-$source = (Resolve-Path -LiteralPath $SourceRepo).Path
+$source = Split-Path $PSScriptRoot -Parent
 $compose = Join-Path $source 'tls\docker-compose.yml'
 $proxy = Join-Path $source 'tls\pass_front.py'
 $certName = if ($Model -eq 'JHS') { 'forged_chain.pem' } else { 'acs_chain.pem' }

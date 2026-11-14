@@ -1,6 +1,5 @@
 [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
 param(
-    [Parameter(Mandatory)] [string] $SourceRepo,
     [Parameter(Mandatory)] [switch] $StbDhcpRestored,
     [string] $TechnitiumServer = 'http://127.0.0.1:5380'
 )
@@ -10,7 +9,7 @@ if (-not $StbDhcpRestored) {
     throw 'Restore DHCP/automatic DNS on the STB and confirm its internet first, then pass -StbDhcpRestored.'
 }
 
-$source = (Resolve-Path -LiteralPath $SourceRepo).Path
+$source = Split-Path $PSScriptRoot -Parent
 $compose = Join-Path $source 'tls\docker-compose.yml'
 $root = Split-Path $PSScriptRoot -Parent
 $stateDir = Join-Path $root '.state'

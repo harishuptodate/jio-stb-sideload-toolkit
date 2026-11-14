@@ -74,7 +74,7 @@ On verified JHS firmware, disable only the stock launcher for user 0 after the r
 
 ## Compose teardown cannot find a file
 
-Use the source checkout's explicit Compose file:
+Use this repository's explicit Compose file:
 
 ```powershell
 docker compose -f C:\path\to\sideload-jiostb\tls\docker-compose.yml down

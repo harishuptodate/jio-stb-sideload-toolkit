@@ -1,12 +1,11 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory)] [string] $SourceRepo,
     [Parameter(Mandatory)] [ipaddress] $PcIp,
     [Parameter(Mandatory)] [ipaddress] $StbIp
 )
 
 $ErrorActionPreference = 'Stop'
-$source = (Resolve-Path -LiteralPath $SourceRepo).Path
+$source = Split-Path $PSScriptRoot -Parent
 $required = @(
     'tls\docker-compose.yml',
     'tls\pass_front.py',
@@ -17,7 +16,7 @@ $required = @(
 
 $missing = $required | Where-Object { -not (Test-Path -LiteralPath (Join-Path $source $_)) }
 if ($missing) {
-    throw "Source checkout is missing: $($missing -join ', ')"
+    throw "Standalone repository is incomplete: $($missing -join ', ')"
 }
 
 $adapterIp = Get-NetIPAddress -AddressFamily IPv4 -IPAddress $PcIp.IPAddressToString -ErrorAction SilentlyContinue
@@ -25,7 +24,7 @@ if (-not $adapterIp) {
     throw "PC address $PcIp is not assigned to a local adapter."
 }
 
-Write-Host "Source checkout: $source"
+Write-Host "Repository: $source"
 Write-Host "PC LAN address: $PcIp"
 Write-Host "STB address: $StbIp"
 Write-Host "Adapter: $($adapterIp.InterfaceAlias)"

@@ -5,7 +5,7 @@ description: Prepare, diagnose, enable network ADB, install a launcher, and make
 
 # Jio STB Clean Setup
 
-Use the source `sideload-jiostb` checkout as an input. This skill supplies safer orchestration and documentation; it does not redistribute its certificates, APKs, ADB binaries, or private material.
+Work from this standalone repository. It contains the verified Windows ADB runtime, TLS/GenieACS assets, orchestration scripts, and modified CleanYourTV source. Do not request or depend on a separate `sideload-jiostb` or CleanYourTV checkout.
 
 ## Route the device
 
@@ -25,27 +25,25 @@ Use the source `sideload-jiostb` checkout as an input. This skill supplies safer
 - Keep Windows Defender Firewall enabled. Add narrowly scoped inbound rules for only the STB IP and PC IP.
 - Give only the STB the PC's DNS address. Keep the PC and other clients on normal router/DHCP DNS.
 - Create the exact DNS zone `acs.oss.jio.com`; never create a broad `jio.com` zone.
-- Queue only the two ADB parameters by default. Do not queue the source repo's FOTA or downgrade flags unless the user explicitly requests them and accepts their effect.
+- Queue only the two ADB parameters. Do not add FOTA or downgrade flags to the normal workflow.
 - Prefer `pm disable-user --user 0` over uninstalling or clearing system packages. Capture a baseline first.
-- Never publish device serials, GenieACS exports, logs, credentials, certificates, private keys, APKs, or ADB binaries.
+- Never publish `.state`, device serials, GenieACS exports, logs, credentials, device-specific certificates, or ADB keys. Repository-owned runtime assets and their licenses are intentionally tracked.
 - Restore the STB to DHCP/automatic DNS before removing PC-side DNS, proxy, Docker, or firewall support.
 
 ## Preferred workflow
 
-1. If local PowerShell scripts are blocked, run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` in that terminal. Then run `scripts/preflight.ps1` with the source checkout, PC IP, and STB IP. Resolve every reported port or file problem.
-2. Run `scripts/configure_technitium.ps1`. It backs up listener settings, binds DNS to the PC LAN IP and loopback, and creates only `acs.oss.jio.com`.
-3. Add the scoped firewall rules printed by preflight from an elevated PowerShell prompt.
-4. Start the model-specific proxy with `scripts/start_proxy.ps1`.
-5. Run `scripts/offline_watch.py` and wait for `READY`.
-6. Disconnect the router WAN/uplink, cold-boot the STB, and wait for a new ACS check-in. Reconnect WAN after the check-in or after the STB reaches its offline error screen.
-7. Identify the new GenieACS device and run `scripts/queue_adb.py`. This queues only ADB enablement and its validity date.
-8. Repeat the WAN-off cold boot. Wait for both tasks to be acknowledged and TCP 5555 to open.
-9. Reconnect WAN. Connect ADB, accept the RSA prompt on the TV, and verify `adb get-state` returns `device`.
-10. Run `scripts/capture_baseline.ps1` before launcher or package changes.
-11. Install and select the launcher using the model reference. Use `scripts/disable_packages.ps1 -WhatIf` before applying a profile.
-12. Verify reboot, Home, remote, Wi-Fi, Settings, JioStore/MyMusic if retained, and ADB reconnection.
+1. Have the user manually set the STB static IP, gateway, subnet, and DNS 1 to the PC LAN IP. Confirm the PC itself remains on normal router/DHCP DNS.
+2. If local PowerShell scripts are blocked, run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`. From elevated PowerShell run `scripts/prepare.ps1` with PC IP, STB IP, and model. It performs preflight, exact Technitium configuration, scoped firewall rules, GenieACS startup, and proxy startup. Resolve every reported problem.
+3. Run `scripts/offline_watch.py` and wait for `READY`.
+4. Disconnect the router WAN/uplink, cold-boot the STB, and wait for a new ACS check-in. Reconnect WAN after the check-in or after the STB reaches its offline error screen.
+5. Identify the new GenieACS device and run `scripts/queue_adb.py`. This queues only ADB enablement and its validity date.
+6. Repeat the WAN-off cold boot. Wait for both tasks to be acknowledged and TCP 5555 to open.
+7. Reconnect WAN. Connect ADB, accept the RSA prompt on the TV, and verify `adb get-state` returns `device`.
+8. Run `scripts/capture_baseline.ps1 -Target ...` before launcher or package changes.
+9. Build and install bundled CleanYourTV with `scripts/build_install_launcher.ps1 -Target ...`. Test it before using `-DisableStockLauncher`. Use `scripts/disable_packages.ps1 -WhatIf` before applying a profile.
+10. Verify reboot, Home, remote, Wi-Fi, Settings, JioStore/MyMusic if retained, and ADB reconnection.
     If remote input remains delayed or standby cannot wake, run `scripts/jhs_remote_repair.ps1 -Action Diagnose` before changing more packages.
-13. Put the STB back on DHCP/automatic DNS. Then run `scripts/cleanup_pc.ps1` to remove the temporary PC configuration.
+11. Put the STB back on DHCP/automatic DNS. Then run `scripts/cleanup_pc.ps1` to remove the temporary PC configuration.
 
 ## Stop conditions
 

@@ -1,13 +1,12 @@
 [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
 param(
-    [Parameter(Mandatory)] [string] $SourceRepo,
     [Parameter(Mandatory)] [string] $Target,
     [Parameter(Mandatory)] [ValidateSet('Diagnose', 'Apply', 'Rollback')] [string] $Action,
     [switch] $Reboot
 )
 
 $ErrorActionPreference = 'Stop'
-$source = (Resolve-Path -LiteralPath $SourceRepo).Path
+$source = Split-Path $PSScriptRoot -Parent
 $adb = Join-Path $source 'adb.exe'
 if (-not (Test-Path -LiteralPath $adb)) { throw "Missing adb.exe in $source" }
 if ((& $adb -s $Target get-state 2>$null) -ne 'device') {

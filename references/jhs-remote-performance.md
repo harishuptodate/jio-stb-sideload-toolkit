@@ -34,7 +34,6 @@ Run from this skill repository in PowerShell:
 
 ```powershell
 .\scripts\jhs_remote_repair.ps1 `
-  -SourceRepo C:\path\to\sideload-jiostb `
   -Target STB_IP:5555 `
   -Action Diagnose
 ```
@@ -45,7 +44,6 @@ Do not apply the workaround unless the report shows the repeating `com.iwedia.co
 
 ```powershell
 .\scripts\jhs_remote_repair.ps1 `
-  -SourceRepo C:\path\to\sideload-jiostb `
   -Target STB_IP:5555 `
   -Action Apply `
   -Reboot
@@ -67,7 +65,6 @@ After reboot, reconnect ADB and diagnose again. Confirm the crash count stays at
 
 ```powershell
 .\scripts\jhs_remote_repair.ps1 `
-  -SourceRepo C:\path\to\sideload-jiostb `
   -Target STB_IP:5555 `
   -Action Rollback `
   -Reboot

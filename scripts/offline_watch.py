@@ -28,18 +28,15 @@ def devices():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source-repo", required=True, type=Path)
     parser.add_argument("--stb-ip", required=True)
     parser.add_argument("--seconds", type=int, default=600)
     parser.add_argument("--proxy-log", type=Path)
     args = parser.parse_args()
     if args.seconds < 1:
         parser.error("--seconds must be positive")
-    source = args.source_repo.resolve()
-    if not (source / "tls" / "pass_front.py").is_file():
-        parser.error("--source-repo is not a sideload-jiostb checkout")
-
     skill_root = Path(__file__).resolve().parent.parent
+    if not (skill_root / "tls" / "pass_front.py").is_file():
+        parser.error("standalone repository is incomplete: tls/pass_front.py is missing")
     proxy_path = args.proxy_log or skill_root / ".state" / "pass_front.log"
     stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")
     output = skill_root / ".state" / f"offline-{stamp}"

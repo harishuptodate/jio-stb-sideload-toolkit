@@ -8,10 +8,10 @@ Upstream reports JMSC200Av2 support on firmware `22.1.09`, `24.1.39`, and `25.1.
 
 1. Record the exact model, hardware revision, and firmware before changing anything.
 2. Capture a clean baseline and keep package changes out of the certificate/ADB validation phase.
-3. Start with the source checkout's JMS/default chain:
+3. Start with the bundled JMS/default chain:
 
 ```powershell
-.\scripts\start_proxy.ps1 -SourceRepo C:\path\to\sideload-jiostb -Model JMS
+.\scripts\start_proxy.ps1 -Model JMS
 ```
 
 4. Run the recorder and perform one WAN-off cold boot.
