@@ -38,6 +38,8 @@ Accept the RSA prompt on the TV. The final command must print `device`. Internet
 
 ## Replacement launcher
 
+For the verified CleanYourTV adaptation, including direct access to Android TV Settings while retaining Jio Settings and Monet rollback, follow [cleanyourtv-jhs.md](cleanyourtv-jhs.md).
+
 Install the launcher APK from the authorized source checkout. The verified package was `com.klevico.monet`:
 
 ```bash

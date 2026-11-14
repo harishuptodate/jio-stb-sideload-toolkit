@@ -15,6 +15,7 @@ Use the source `sideload-jiostb` checkout as an input. This skill supplies safer
 4. Read [references/troubleshooting.md](references/troubleshooting.md) when a readiness check, TLS handshake, ACS check-in, or ADB connection fails.
 5. Before disabling packages, read [references/package-policy.md](references/package-policy.md).
 6. For delayed or batched remote input, loss of wake after idle, or repeated iWedia crashes on verified JHS firmware, read [references/jhs-remote-performance.md](references/jhs-remote-performance.md).
+7. To build and adapt CleanYourTV as the JHS Home launcher, read [references/cleanyourtv-jhs.md](references/cleanyourtv-jhs.md). Do not apply its JMS C200A debloat example to JHS.
 
 ## Operational invariants
 
