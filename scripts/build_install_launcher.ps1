@@ -1,4 +1,4 @@
-[CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+﻿[CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
 param(
     [Parameter(Mandatory)] [string] $Target,
     [switch] $SkipBuild,
@@ -30,12 +30,12 @@ if ((Get-Item -LiteralPath $apk).Length -ge 589824) {
 New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $backup = Join-Path $stateDir "launcher-before-$stamp.json"
-$home = ((& $adb -s $Target shell cmd package resolve-activity --brief `
+$currentHome = ((& $adb -s $Target shell cmd package resolve-activity --brief `
     -a android.intent.action.MAIN -c android.intent.category.HOME) -join "`n").Trim()
 $stockDisabled = [bool]((& $adb -s $Target shell pm list packages -d com.iwedia.ui.rjio.launcher.reliance) -join '')
 [pscustomobject]@{
     target = $Target
-    home = $home
+    home = $currentHome
     stockLauncherDisabled = $stockDisabled
     savedAt = (Get-Date).ToString('o')
 } | ConvertTo-Json | Set-Content -LiteralPath $backup -Encoding UTF8

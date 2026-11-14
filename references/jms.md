@@ -38,3 +38,23 @@ Update this reference with observed facts, including failures. Do not generalize
 2. **CWMP Date Strictness**: Rejects ISO 8601 UTC `.000Z` date format with SOAP Fault 9003. Requires `YYYY-MM-DDTHH:MM:SS+00:00`. `tls/pass_front.py` dynamically normalizes this.
 3. **GenieACS Declarative Cache**: If `Device.JioSTB.USB.USBDebugging` is cached as `true` in MongoDB while ADB is not actually listening, GenieACS will not send the command over the wire. Unset the cached parameter in `db.devices` before queuing.
 4. **Remote Wake Unusable**: Connection Request on port 7547 actively resets TCP (`RST`). Trigger check-ins via cold boot (unplug power 5s, reconnect) during the WAN-off window.
+
+## Full Verification on JMSC200A (Firmware 25.1.9) - PASSED
+
+Completed full end-to-end enablement, hardening, and launcher replacement on **JMSC200A** (`E4FAE4-JMSC200A-RNOSBGMB021108F`), running firmware `JioSTB-JMSC200A-25.1.9` (`Jio/4KOTTSTB/MSTB:11/25.1.9/8:user/release-keys`):
+
+1. **Certificate Chain**: `acs_chain.pem` (Reliance RIL Root CA) accepted without TLS errors on port 9443.
+2. **Date Parser Rewriting**: Strict Jio date parser rejected ISO 8601 `.000Z` with Fault 9007; `tls/pass_front.py` rewritten to `+00:00`, which was accepted with `Status 0` for `Device.JioSTB.USB.DebugValidityDate` (valid through 2037).
+3. **Persistent ADB**: Port 5555 active (`[init.svc.adbd]: [running]`, `[service.adb.tcp.port]: [5555]`, `[persist.sys.usb.config]: [adb]`).
+4. **CleanYourTV Launcher**: Installed `com.gathin.tvhome`, stock launcher `com.iwedia.ui.rjio.launcher.reliance` safely disabled via `pm disable-user --user 0`, CleanYourTV confirmed active Home window.
+5. **Debloat & Performance**:
+   - `com.jio.controlcentre` disabled (eliminates Compose back-button panic trap, saves ~135 MB RAM).
+   - `com.jio.tr069client` and ad services disabled.
+   - Core and optional bloatware profiles applied cleanly.
+   - Available free RAM: **~910 MB**.
+   - CPU idle: **~89%**.
+6. **Installed Applications**:
+   - SmartTube
+   - Cobalt
+   - Downloader
+   - Monet Launcher (safe rollback fallback)
