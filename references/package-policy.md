@@ -8,6 +8,8 @@ Capture a package, property, and Home baseline before changing anything. Disable
 - `com.jio.mymusic.app` — MyMusic
 - `com.media.jio.sso.stb` — Jio Account/SSO; retain when keeping JioStore or MyMusic
 - `com.jio.remote.btserver` — remote/Bluetooth service
+- `com.android.app.jio.voiceassist` — Jio speech-recognition service and remote voice overlay
+- `com.jio.keyboard.swarachakra` — Jio IME used to transfer recognized speech into focused text fields
 - `com.iwedia.bluetoothconnectionservice`
 - `com.iwedia.displayservice`
 - `com.iwedia.tvinput`
@@ -46,7 +48,6 @@ User-facing packages disabled in the completed session included:
 - `com.jio.myhome.mediasharedmp`
 - `com.jio.yt`
 - `com.jio.myjiotv`
-- `com.android.app.jio.voiceassist`
 - `com.jio.media.jiotvplus`
 - `com.jio.jiopay`
 - `com.etvwin.androidtv`
@@ -61,6 +62,7 @@ User-facing packages disabled in the completed session included:
 
 Known implications:
 
+- Preserve `com.android.app.jio.voiceassist` and keep `android.permission.RECORD_AUDIO` granted to `com.jio.keyboard.swarachakra` when voice search is wanted. Disabling the assistant or denying the keyboard microphone permission prevents SmartTube/TizenTube microphone actions from entering listening mode.
 - `com.netflix.partnertoken` is the PADI/partner-token component; disabling it can affect Netflix activation.
 - `com.jio.dialserver` is JioCast Dial server; disable only when casting is unused.
 - `com.jio.stb.catv` is a privileged LiveTV component. It is no longer part of the default optional profile: disabling it did not cure the verified JHS crash loop, and its state changed during reboot testing.

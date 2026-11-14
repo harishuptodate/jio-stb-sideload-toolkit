@@ -188,7 +188,7 @@ The script uses `pm disable-user --user 0`, records a report, and never uninstal
 .\adb.exe -s 192.168.1.128:5555 shell pm enable PACKAGE.NAME
 ```
 
-Preserve JioStore, MyMusic, Jio Account/SSO, Jio Settings, and remote/Bluetooth services unless you deliberately accept losing them.
+Preserve JioStore, MyMusic, Jio Account/SSO, Jio Settings, remote/Bluetooth services, Jio Voice Assist, and the Jio keyboard unless you deliberately accept losing their functions. Voice search requires Jio Voice Assist enabled and microphone permission granted to the Jio keyboard.
 
 ### 10. Reboot verification
 
