@@ -97,4 +97,13 @@ final class SystemSettings {
         }
         return intent(context, Settings.ACTION_DISPLAY_SETTINGS);
     }
+
+    /** Prefer Android TV's accessory screen on JioOS, whose vendor settings intercept standard actions. */
+    static Intent bluetoothIntent(Context context) {
+        ComponentName accessories = new ComponentName("com.android.tv.settings",
+                "com.android.tv.settings.accessories.AddAccessoryActivity");
+        Intent explicit = new Intent().setComponent(accessories);
+        if (context.getPackageManager().resolveActivity(explicit, 0) != null) return explicit;
+        return intent(context, Settings.ACTION_BLUETOOTH_SETTINGS);
+    }
 }

@@ -4,6 +4,8 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -187,6 +189,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** config show_inputs_pill: false keeps the Inputs pill hidden even when the TV has inputs. */
     private boolean showInputsPill = true;
     private TextView btnWifi;
+    private TextView btnBluetooth;
     /** The network pill's icon as last set, so a refresh that changes nothing does not lay the top bar out again. */
     private int wifiIcon;
     /** The pills have been filled in once; later resumes refresh them after the first frame. */
@@ -820,9 +823,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         btnInputs = findViewById(R.id.btnInputs);
+        btnBluetooth = findViewById(R.id.btnBluetooth);
         View btnSettings = findViewById(R.id.btnSettings);
         btnInputs.setOnClickListener(v -> showInputs());
         btnWifi.setOnClickListener(v -> openNetworkPill());
+        btnBluetooth.setOnClickListener(v -> open(SystemSettings.bluetoothIntent(this)));
         btnVpn.setOnClickListener(v -> openVpnPill());
         btnWifi.setOnLongClickListener(v -> {
             open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
@@ -868,6 +873,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             showInputsPill = false;
             btnInputs.setVisibility(View.GONE);
             btnWifi.setVisibility(View.GONE);
+            btnBluetooth.setVisibility(View.GONE);
             ((TextView) btnSettings).setText(R.string.settings);
             ((TextView) btnSettings).setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_settings, 0, 0, 0);
             if (!iconOnlyButtons) makeIconOnly((TextView) btnSettings);
@@ -883,6 +889,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (iconOnlyButtons) {
             if (cfg.wifiLabelWidth > 0) btnWifi.setMaxWidth(Math.round(cfg.wifiLabelWidth * density));
             else makeIconOnly(btnWifi);
+            makeIconOnly(btnBluetooth);
             makeIconOnly((TextView) btnSettings);
         }
         if (cfg.iconOnlyInputs) makeIconOnly((TextView) btnInputs);
@@ -916,13 +923,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         };
         btnInputs.setOnKeyListener(pillKeys);
         btnWifi.setOnKeyListener(pillKeys);
+        btnBluetooth.setOnKeyListener(pillKeys);
         btnVpn.setOnKeyListener(pillKeys);
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
         if (advancedEffects) {
-            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnBluetooth, btnVpn, btnReorder, btnLibraryTop, btnSettings));
             pills.addAll(topAppButtons);
             for (View button : pills) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
@@ -1133,6 +1141,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             refreshPillsAfterNextDraw();
         } else {
             updateWifiLabel();
+            updateBluetoothLabel();
             updateInputsButton();
             pillsShown = true;
         }
@@ -2931,6 +2940,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 handler.post(() -> {
                     if (isDestroyed()) return;
                     updateWifiLabel();
+                    updateBluetoothLabel();
                     updateInputsButton();
                 });
                 return true;
@@ -3038,6 +3048,37 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 btnWifi.setCompoundDrawableTintList(tint);
             }
         }
+    }
+
+    /** Shows the connected Bluetooth device when Android exposes it; otherwise keeps the stable pill label. */
+    @SuppressWarnings({"MissingPermission", "JavaReflectionMemberAccess"})
+    private void updateBluetoothLabel() {
+        String label = getString(R.string.bluetooth);
+        try {
+            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+            if (adapter == null || !adapter.isEnabled()) {
+                btnBluetooth.setText(label);
+                return;
+            }
+            java.util.Set<BluetoothDevice> bonded = adapter.getBondedDevices();
+            for (BluetoothDevice device : bonded) {
+                boolean connected = false;
+                try {
+                    connected = (boolean) BluetoothDevice.class.getMethod("isConnected").invoke(device);
+                } catch (ReflectiveOperationException ignored) {
+                    // HID host is profile 4 on Android TV. A single bonded remote is the useful fallback when
+                    // firmware hides BluetoothDevice.isConnected from ordinary apps.
+                    connected = bonded.size() == 1
+                            && adapter.getProfileConnectionState(4) == BluetoothAdapter.STATE_CONNECTED;
+                }
+                if (!connected) continue;
+                String name = device.getName();
+                if (!TextUtils.isEmpty(name)) label = name;
+                break;
+            }
+        } catch (Exception ignored) {
+        }
+        btnBluetooth.setText(label);
     }
 
     /** config.xml icon_only_buttons. */

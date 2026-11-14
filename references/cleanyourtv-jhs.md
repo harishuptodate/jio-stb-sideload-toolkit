@@ -10,7 +10,8 @@ The verified adaptation provides:
 
 - SmartTube, Cobalt, JioStore, and MyMusic in the dock;
 - Android TV Settings from the top Settings button;
-- Android TV Network settings from the Wi-Fi button;
+- the connected SSID on the Wi-Fi button, which opens Android TV Network settings;
+- the connected Bluetooth device on a Bluetooth button, which opens Android TV accessory pairing;
 - Jio stock Settings as **Native settings** in the Settings long-press menu;
 - the launcher's normal animations;
 - available RAM and free storage displayed under the clock by default, with an on-screen toggle in Launcher settings;
@@ -79,6 +80,7 @@ The bundled source already contains these JHS-scoped changes:
    - In `config.xml`, set `show_stats` to `true` by default (`<bool name="show_stats">true</bool>`).
    - In `MainActivity.java` (`readStatsLine()`) and `strings.xml`, report available RAM (`Memory %1$d MB free / %2$d MB`) and free storage (`Storage %1$s free`).
    - In `LauncherSettingsActivity.java`, `activity_launcher_settings.xml`, and `Config.java` (`SHOW_STATS_KEY`), add a **RAM and storage** toggle switch so users can toggle the stats line on or off on-screen without rebuilding.
+8. Add a Bluetooth pill beside Wi-Fi. Read the connected bonded-device name on Home resume, constrain long Wi-Fi and Bluetooth names with ellipsis, and open `com.android.tv.settings/.accessories.AddAccessoryActivity` when selected.
 
 Do not add Internet access, new dependencies, binaries, or a JHS debloat list derived from the JMS example.
 
@@ -106,7 +108,8 @@ Verify by observed resumed components, then cold-boot once:
 
 - Home resolves to and resumes `com.gathin.tvhome/.MainActivity`;
 - Settings resumes `com.android.tv.settings/.MainSettings`;
-- Wi-Fi resumes `com.android.tv.settings/.connectivity.NetworkActivity`;
+- Wi-Fi shows the connected SSID and resumes `com.android.tv.settings/.connectivity.NetworkActivity`;
+- Bluetooth shows the connected device name and resumes `com.android.tv.settings/.accessories.AddAccessoryActivity`;
 - all four dock apps open, including `com.jio.mymusic.app/com.jio.mymusic.ui.WelcomeActivity`;
 - long-press Settings contains **Native settings** and it opens Jio Settings;
 - the stats line under the clock displays available RAM and free storage (e.g. Memory 741 MB free / 1959 MB · Storage 1.6 GB free);

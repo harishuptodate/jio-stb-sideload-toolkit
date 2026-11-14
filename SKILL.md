@@ -41,7 +41,7 @@ Work from this standalone repository. It contains the verified Windows ADB runti
 7. Reconnect WAN. Connect ADB, accept the RSA prompt on the TV, and verify `adb get-state` returns `device`.
 8. Run `scripts/capture_baseline.ps1 -Target ...` before launcher or package changes.
 9. Build and install bundled CleanYourTV with `scripts/build_install_launcher.ps1 -Target ...`. Test it before using `-DisableStockLauncher`. Use `scripts/disable_packages.ps1 -WhatIf` before applying a profile.
-10. Verify reboot, Home, remote, Wi-Fi, Settings, JioStore/MyMusic if retained, and ADB reconnection.
+10. Verify reboot, Home, remote, connected Wi-Fi/Bluetooth names, both pills' settings actions, Settings, JioStore/MyMusic if retained, and ADB reconnection.
     If remote input remains delayed or standby cannot wake, run `scripts/jhs_remote_repair.ps1 -Action Diagnose` before changing more packages.
 11. Put the STB back on DHCP/automatic DNS. Then run `scripts/cleanup_pc.ps1` to remove the temporary PC configuration.
 

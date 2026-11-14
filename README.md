@@ -144,7 +144,9 @@ The bundled source is customized for verified JHS:
 - the dock targets SmartTube, Cobalt, JioStore, and MyMusic when present;
 - normal animations remain enabled;
 - available RAM and free storage show by default;
-- **Launcher settings → RAM and storage** toggles the stats line.
+- **Launcher settings → RAM and storage** toggles the stats line;
+- the top Wi-Fi and Bluetooth pills show the connected network and remote/device names;
+- selecting Bluetooth opens Android TV's accessory pairing screen.
 
 Build, test, lint, install, and select it as Home:
 
@@ -196,7 +198,8 @@ Cold-boot once with WAN connected and verify:
 
 - CleanYourTV returns as Home;
 - physical remote, volume, Home, and idle wake work;
-- Wi-Fi opens Android TV Network settings;
+- Wi-Fi displays the connected SSID and opens Android TV Network settings;
+- Bluetooth displays the connected device and opens Android TV accessory pairing;
 - Settings opens Android TV Settings;
 - long-press Settings offers Native settings;
 - retained JioStore/MyMusic open;
