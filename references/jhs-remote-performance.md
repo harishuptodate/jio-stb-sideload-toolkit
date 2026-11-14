@@ -80,4 +80,5 @@ Rollback re-enables the vendor service and restores the saved power settings. If
 - Bonded but disconnected after idle: press one key and wait; if it never reconnects, replace batteries and reset/re-pair the remote.
 - Connected but input still batches with no crash loop: inspect current foreground CPU and memory use, then test with that app force-stopped.
 - Crash loop returns after rollback: reapply only if LiveTV is unnecessary.
+- `insight.tr069.client` polling note: with comedia disabled, `insight.tr069.client` logs repeating lines `TR069ComediaConnection: iCommonTIFExtnControl:null` every ~100 ms. This is a benign IPC poll, consumes ~3-4% CPU, and does not cause input lag or batching.
 - JMS or another firmware: collect evidence only. Do not apply this JHS-specific workaround.
