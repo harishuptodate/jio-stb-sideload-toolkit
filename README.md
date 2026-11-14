@@ -78,6 +78,8 @@ Before any app changes:
 
 Read [the JHS guide](references/jhs.md) or [the provisional JMS guide](references/jms.md) before continuing.
 
+If a verified JHS box develops delayed or batched remote input, cannot wake after idle, or repeatedly crashes `com.iwedia.comedia.service`, use [the JHS remote-performance guide](references/jhs-remote-performance.md). The included repair script diagnoses first and keeps a rollback file before changing power or package state.
+
 ## Corrections to the rough workflow
 
 - `stage1.sh --list-devices` only lists devices and exits; it is not setup.

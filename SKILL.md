@@ -14,6 +14,7 @@ Use the source `sideload-jiostb` checkout as an input. This skill supplies safer
 3. For `JMSC200A`, `JMSC200Av2`, or another JMS variant, read [references/jms.md](references/jms.md). Treat that path as provisional until the exact model and firmware complete the full workflow.
 4. Read [references/troubleshooting.md](references/troubleshooting.md) when a readiness check, TLS handshake, ACS check-in, or ADB connection fails.
 5. Before disabling packages, read [references/package-policy.md](references/package-policy.md).
+6. For delayed or batched remote input, loss of wake after idle, or repeated iWedia crashes on verified JHS firmware, read [references/jhs-remote-performance.md](references/jhs-remote-performance.md).
 
 ## Operational invariants
 
@@ -42,6 +43,7 @@ Use the source `sideload-jiostb` checkout as an input. This skill supplies safer
 10. Run `scripts/capture_baseline.ps1` before launcher or package changes.
 11. Install and select the launcher using the model reference. Use `scripts/disable_packages.ps1 -WhatIf` before applying a profile.
 12. Verify reboot, Home, remote, Wi-Fi, Settings, JioStore/MyMusic if retained, and ADB reconnection.
+    If remote input remains delayed or standby cannot wake, run `scripts/jhs_remote_repair.ps1 -Action Diagnose` before changing more packages.
 13. Put the STB back on DHCP/automatic DNS. Then run `scripts/cleanup_pc.ps1` to remove the temporary PC configuration.
 
 ## Stop conditions

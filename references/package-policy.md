@@ -57,13 +57,13 @@ User-facing packages disabled in the completed session included:
 - `com.zee5.aosp`
 - `com.inn.nvengineer`
 - `com.jio.dialserver`
-- `com.jio.stb.catv`
 
 Known implications:
 
 - `com.netflix.partnertoken` is the PADI/partner-token component; disabling it can affect Netflix activation.
 - `com.jio.dialserver` is JioCast Dial server; disable only when casting is unused.
-- `com.jio.stb.catv` is a privileged LiveTV component. Disable it only when LiveTV is unwanted and test TV input behavior.
+- `com.jio.stb.catv` is a privileged LiveTV component. It is no longer part of the default optional profile: disabling it did not cure the verified JHS crash loop, and its state changed during reboot testing.
+- `com.iwedia.comedia.service` is a persistent vendor television service. Do not disable it during ordinary debloating. On verified JHS firmware, disable it only when logs show its confirmed repeating `libcomedias.so` crash signature and LiveTV is not needed; follow `jhs-remote-performance.md` and preserve rollback state.
 - `com.inn.nvengineer` is JioNetVelocity.
 - `com.jio.media.jiotvplus` is the downloadable JioTV+ package.
 

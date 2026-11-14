@@ -49,8 +49,7 @@ $optional = @(
     'com.netflix.partnertoken',
     'com.zee5.aosp',
     'com.inn.nvengineer',
-    'com.jio.dialserver',
-    'com.jio.stb.catv'
+    'com.jio.dialserver'
 )
 
 $targets = switch ($Profile) {
