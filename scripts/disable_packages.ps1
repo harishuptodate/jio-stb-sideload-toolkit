@@ -1,7 +1,7 @@
 [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
 param(
     [Parameter(Mandatory)] [string] $Target,
-    [Parameter(Mandatory)] [ValidateSet('JhsCore', 'JhsOptional', 'Explicit')] [string] $Profile,
+    [Parameter(Mandatory)] [ValidateSet('JhsCore', 'JhsOptional', 'JmsCore', 'JmsOptional', 'Explicit')] [string] $Profile,
     [string[]] $Packages
 )
 
@@ -52,9 +52,48 @@ $optional = @(
     'com.jio.controlcentre'
 )
 
+$jmsCore = @(
+    'com.jio.tr069client',
+    'com.rjil.jio.stb.commandreceiver',
+    'com.jio.stbadservice',
+    'com.jio.controlcentre',
+    'com.jio.stb.hotellauncher'
+)
+
+$jmsOptional = @(
+    'com.jio.media.livetv',
+    'com.jio.stb.bot',
+    'com.jio.media.jionewsstb',
+    'com.discoveryplus.tv.jiotv',
+    'com.jiostb.jiogames',
+    'com.jio.media.jiobeats',
+    'com.jio.jiocall',
+    'com.jio.web',
+    'com.jio.jiocloudpc',
+    'com.jiotv.sonyliv',
+    'com.jio.screensaver',
+    'com.jio.myhome.mediasharedmp',
+    'com.jio.yt',
+    'com.jio.myjiotv',
+    'com.android.app.jio.voiceassist',
+    'com.jio.media.jiotvplus',
+    'com.jio.jiopay',
+    'com.etvwin.androidtv',
+    'com.hoichoi.mitv',
+    'com.suntv.sunnxt',
+    'com.amazon.amazonvideo.livingroom',
+    'com.netflix.partnertoken',
+    'com.zee5.aosp',
+    'com.inn.nvengineer',
+    'com.jio.dialserver',
+    'com.android.talkback'
+)
+
 $targets = switch ($Profile) {
     'JhsCore' { $core }
     'JhsOptional' { $optional }
+    'JmsCore' { $jmsCore }
+    'JmsOptional' { $jmsOptional }
     'Explicit' {
         if (-not $Packages) { throw '-Packages is required with -Profile Explicit.' }
         $Packages

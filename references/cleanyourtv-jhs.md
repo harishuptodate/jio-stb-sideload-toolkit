@@ -76,11 +76,29 @@ The bundled source already contains these JHS-scoped changes:
 
 5. Enable `app_library` and preload `com.jio.mymusic.app` in `library_apps`. MyMusic has a normal launcher activity but no Leanback launcher activity; without the preload, CleanYourTV skips it and fills its dock slot with another app.
 6. Leave `reduced_motion` false unless the user explicitly prefers reduced animation. The verified owner preferred the normal animation.
-7. Configure the system stats line to show available RAM and free storage by default, with an on-screen toggle:
+7. Configure the system stats line to show live hardware stats with Material vector logos instead of text clutter:
    - In `config.xml`, set `show_stats` to `true` by default (`<bool name="show_stats">true</bool>`).
-   - In `MainActivity.java` (`readStatsLine()`) and `strings.xml`, report available RAM (`Memory %1$d MB free / %2$d MB`) and free storage (`Storage %1$s free`).
-   - In `LauncherSettingsActivity.java`, `activity_launcher_settings.xml`, and `Config.java` (`SHOW_STATS_KEY`), add a **RAM and storage** toggle switch so users can toggle the stats line on or off on-screen without rebuilding.
-8. Add a Bluetooth pill beside Wi-Fi. Read the connected bonded-device name on Home resume, constrain long Wi-Fi and Bluetooth names with ellipsis, and open `com.android.tv.settings/.accessories.AddAccessoryActivity` when selected.
+   - Replaced text labels ("CPU", "Memory", "Storage") with crisp vector icons: `ic_stat_cpu.xml` (microchip), `ic_stat_memory.xml` (RAM stick module), and `ic_stat_storage.xml` (drive trays).
+   - Used `CenteredImageSpan` (`CenteredImageSpan.java`) to vertically center icons with font metrics.
+   - Computes raw values off the main thread in `readRawStats()`, then builds `SpannableStringBuilder` on UI thread without frame drops.
+   - Preserves live real numbers and units (e.g. `[CPU] 17% • [RAM] 651 MB free / 1990 MB • [Storage] 22 GB free`).
+   - In `LauncherSettingsActivity.java`, `activity_launcher_settings.xml`, and `Config.java` (`SHOW_STATS_KEY`), retained the **RAM and storage** toggle switch.
+8. Circular icon-only Settings button:
+   - Converted `btnSettings` to `@style/TopButtonIcon` (42dp circle with 10dp padding).
+   - Removed the text label so only the clean gear logo is shown.
+9. Dynamic Wi-Fi and Bluetooth expanding pills:
+   - **At Rest (Unfocused)**: Collapsed into compact 42dp circular buttons.
+   - **Connection State Visuals**:
+     - Connected: Active glowing blue frosted glass capsule (`pill_bg_connected.xml`) with electric blue gradient and stroke.
+     - Disconnected: Dim neutral transparent glass (`pill_bg_disconnected.xml`).
+   - **On D-Pad Remote Focus**:
+     - Dynamically expands into a full pill.
+     - Background transitions to solid white pill with dark text/icons.
+     - Displays the connected Wi-Fi SSID or connected Bluetooth accessory name (e.g. `JIO BLE Remote`).
+     - Collapses immediately when focus leaves.
+   - **Wi-Fi SSID Resolution on Android 9/10/11**:
+     - `WifiInfo.getSSID()` requires runtime location permissions on modern Android TV OS.
+     - `build_install_launcher.ps1` automatically executes `pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION` and `ACCESS_COARSE_LOCATION` upon installation.
 
 Do not add Internet access, new dependencies, binaries, or a JHS debloat list derived from the JMS example.
 

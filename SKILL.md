@@ -1,6 +1,6 @@
 ---
 name: jiostb-clean-setup
-description: Prepare, diagnose, enable network ADB, install a launcher, and make reversible package changes on supported Jio STBs using Windows, Technitium DNS, and GenieACS. Use for verified JHSC200/JioOS 2.0 work and provisional JMSC/JMS work; do not use for firmware flashing or bootloader unlocking.
+description: Prepare, diagnose, enable network ADB, install a customized launcher, and make reversible package changes on supported Jio STBs using Windows, Technitium DNS, and GenieACS. Fully verified on JHSC200 v1 (JioOS 2.0) and JMSC200A (25.1.9); do not use for firmware flashing or bootloader unlocking.
 ---
 
 # Jio STB Clean Setup
@@ -11,7 +11,7 @@ Work from this standalone repository. It contains the verified Windows ADB runti
 
 1. Record the exact model and firmware shown by the STB.
 2. For `JHSC200 v1` / JioOS 2.0, read [references/jhs.md](references/jhs.md).
-3. For `JMSC200A`, `JMSC200Av2`, or another JMS variant, read [references/jms.md](references/jms.md). Treat that path as provisional until the exact model and firmware complete the full workflow.
+3. For `JMSC200A` (`25.1.9`), `JMSC200Av2`, or another JMS variant, read [references/jms.md](references/jms.md). Base `JMSC200A` (`25.1.9`) is fully verified end-to-end.
 4. Read [references/troubleshooting.md](references/troubleshooting.md) when a readiness check, TLS handshake, ACS check-in, or ADB connection fails.
 5. Before disabling packages, read [references/package-policy.md](references/package-policy.md).
 6. For delayed or batched remote input, loss of wake after idle, or repeated iWedia crashes on verified JHS firmware, read [references/jhs-remote-performance.md](references/jhs-remote-performance.md).
@@ -40,7 +40,7 @@ Work from this standalone repository. It contains the verified Windows ADB runti
 6. Repeat the WAN-off cold boot. Wait for both tasks to be acknowledged and TCP 5555 to open.
 7. Reconnect WAN. Connect ADB, accept the RSA prompt on the TV, and verify `adb get-state` returns `device`.
 8. Run `scripts/capture_baseline.ps1 -Target ...` before launcher or package changes.
-9. Build and install bundled CleanYourTV with `scripts/build_install_launcher.ps1 -Target ...`. Test it before using `-DisableStockLauncher`. Use `scripts/disable_packages.ps1 -WhatIf` before applying a profile.
+9. Build and install bundled CleanYourTV with `scripts/build_install_launcher.ps1 -Target ...` (automatically grants runtime location permission for Wi-Fi SSID resolution). Features include an icon-only gear Settings button, dynamic Wi-Fi & Bluetooth expanding pills on remote D-pad focus with glowing blue glass for connected states, and live hardware stats with Material vector logos. Test it before using `-DisableStockLauncher`. Use `scripts/disable_packages.ps1 -WhatIf` with `-Profile JhsCore` / `JhsOptional` or `-Profile JmsCore` / `JmsOptional` before applying a profile.
 10. Verify reboot, Home, remote, connected Wi-Fi/Bluetooth names, both pills' settings actions, Settings, JioStore/MyMusic if retained, and ADB reconnection.
     If remote input remains delayed or standby cannot wake, run `scripts/jhs_remote_repair.ps1 -Action Diagnose` before changing more packages.
 11. Put the STB back on DHCP/automatic DNS. Then run `scripts/cleanup_pc.ps1` to remove the temporary PC configuration.

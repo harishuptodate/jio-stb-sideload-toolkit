@@ -47,14 +47,21 @@ Completed full end-to-end enablement, hardening, and launcher replacement on **J
 2. **Date Parser Rewriting**: Strict Jio date parser rejected ISO 8601 `.000Z` with Fault 9007; `tls/pass_front.py` rewritten to `+00:00`, which was accepted with `Status 0` for `Device.JioSTB.USB.DebugValidityDate` (valid through 2037).
 3. **Persistent ADB**: Port 5555 active (`[init.svc.adbd]: [running]`, `[service.adb.tcp.port]: [5555]`, `[persist.sys.usb.config]: [adb]`).
 4. **CleanYourTV Launcher**: Installed `com.gathin.tvhome`, stock launcher `com.iwedia.ui.rjio.launcher.reliance` safely disabled via `pm disable-user --user 0`, CleanYourTV confirmed active Home window.
-5. **Debloat & Performance**:
+5. **Top Bar & Stats UI Customizations**:
+   - **Settings Button**: Icon-only 42dp circular button showing only the clean gear logo.
+   - **Wi-Fi & Bluetooth Buttons**:
+     - At rest: 42dp circular buttons with active glowing blue frosted glass (`pill_bg_connected.xml`) when connected, dim transparent glass (`pill_bg_disconnected.xml`) when disconnected.
+     - On D-Pad remote focus: Expands to full pill showing connected Wi-Fi SSID and Bluetooth remote (`JIO BLE Remote`).
+     - `ACCESS_FINE_LOCATION` granted automatically by `build_install_launcher.ps1` so Android 11 resolves the active Wi-Fi SSID.
+   - **Hardware Stats**: Text labels ("CPU", "Memory", "Storage") replaced with Material vector icons (`ic_stat_cpu`, `ic_stat_memory`, `ic_stat_storage`) vertically centered via `CenteredImageSpan`, displaying live real values without UI jank.
+6. **Debloat & Performance**:
    - `com.jio.controlcentre` disabled (eliminates Compose back-button panic trap, saves ~135 MB RAM).
    - `com.jio.tr069client` and ad services disabled.
-   - Core and optional bloatware profiles applied cleanly.
+   - Core (`JmsCore`) and optional bloatware (`JmsOptional`) profiles codified in `scripts/disable_packages.ps1`.
    - Available free RAM: **~910 MB**.
    - CPU idle: **~89%**.
-6. **Installed Applications**:
-   - SmartTube
-   - Cobalt
-   - Downloader
-   - Monet Launcher (safe rollback fallback)
+7. **Installed Applications**:
+   - SmartTube (`SmartTube_stable_32.71_armeabi-v7a.apk`)
+   - Cobalt (`cobalt-arm.apk`)
+   - Downloader (`com.esaba.downloader_1.4.4-49_minAPI16(nodpi)_apkmirror.com.apk`)
+   - Monet Launcher (`monet-launcher.apk` — safe rollback fallback)

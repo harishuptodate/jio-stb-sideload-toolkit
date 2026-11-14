@@ -69,6 +69,48 @@ Known implications:
 - `com.jio.media.jiotvplus` is the downloadable JioTV+ package.
 - `com.jio.controlcentre` is Jio's quick settings overlay and notification panel. Its Jetpack Compose UI intercepts remote input and its `onPreviewKeyEvent` handler drops `KEYCODE_BACK` ("back pressed - debounced, ignoring"), creating a panic trap where Back fails and only Home escapes. It has zero system dependents; disabling it stops its background services (`EndlessService`, `CCBridgeService`), saves ~135 MB RAM, and removes the trapped tile from all launchers.
 
+
+## Verified JMS core profile (JMSC200A)
+
+These were disabled on verified JMSC200A firmware (`25.1.9`) after persistent ADB was established:
+
+- `com.jio.tr069client` — blocks remote firmware downgrade / ADB revocation
+- `com.rjil.jio.stb.commandreceiver`
+- `com.jio.stbadservice`
+- `com.jio.controlcentre` — eliminates Compose back-button trap and saves ~135 MB RAM
+- `com.jio.stb.hotellauncher`
+
+## Verified JMS optional profile (JMSC200A)
+
+User-facing bloatware disabled on the verified JMSC200A box:
+
+- `com.jio.media.livetv`
+- `com.jio.stb.bot`
+- `com.jio.media.jionewsstb`
+- `com.discoveryplus.tv.jiotv`
+- `com.jiostb.jiogames`
+- `com.jio.media.jiobeats`
+- `com.jio.jiocall`
+- `com.jio.web`
+- `com.jio.jiocloudpc`
+- `com.jiotv.sonyliv`
+- `com.jio.screensaver`
+- `com.jio.myhome.mediasharedmp`
+- `com.jio.yt`
+- `com.jio.myjiotv`
+- `com.android.app.jio.voiceassist`
+- `com.jio.media.jiotvplus`
+- `com.jio.jiopay`
+- `com.etvwin.androidtv`
+- `com.hoichoi.mitv`
+- `com.suntv.sunnxt`
+- `com.amazon.amazonvideo.livingroom`
+- `com.netflix.partnertoken`
+- `com.zee5.aosp`
+- `com.inn.nvengineer`
+- `com.jio.dialserver`
+- `com.android.talkback`
+
 ## Explicit package mode
 
 For packages outside these profiles, query first:
