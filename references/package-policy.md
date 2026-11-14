@@ -57,6 +57,7 @@ User-facing packages disabled in the completed session included:
 - `com.zee5.aosp`
 - `com.inn.nvengineer`
 - `com.jio.dialserver`
+- `com.jio.controlcentre`
 
 Known implications:
 
@@ -66,6 +67,7 @@ Known implications:
 - `com.iwedia.comedia.service` is a persistent vendor television service. Do not disable it during ordinary debloating. On verified JHS firmware, disable it only when logs show its confirmed repeating `libcomedias.so` crash signature and LiveTV is not needed; follow `jhs-remote-performance.md` and preserve rollback state.
 - `com.inn.nvengineer` is JioNetVelocity.
 - `com.jio.media.jiotvplus` is the downloadable JioTV+ package.
+- `com.jio.controlcentre` is Jio's quick settings overlay and notification panel. Its Jetpack Compose UI intercepts remote input and its `onPreviewKeyEvent` handler drops `KEYCODE_BACK` ("back pressed - debounced, ignoring"), creating a panic trap where Back fails and only Home escapes. It has zero system dependents; disabling it stops its background services (`EndlessService`, `CCBridgeService`), saves ~135 MB RAM, and removes the trapped tile from all launchers.
 
 ## Explicit package mode
 
