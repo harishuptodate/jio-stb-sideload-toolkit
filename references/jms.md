@@ -31,3 +31,10 @@ Upstream reports JMSC200Av2 support on firmware `22.1.09`, `24.1.39`, and `25.1.
 - exact cleanup and DNS restoration are tested.
 
 Update this reference with observed facts, including failures. Do not generalize one JMS hardware revision to the whole family.
+
+## Observed facts on JMSC200A (RNOSBGMB021108F)
+
+1. **Certificate Chain**: Uses `acs_chain.pem` (RIL Root CA) on `https://acs.oss.jio.com:9443/ftacs-digest/ACS`.
+2. **CWMP Date Strictness**: Rejects ISO 8601 UTC `.000Z` date format with SOAP Fault 9003. Requires `YYYY-MM-DDTHH:MM:SS+00:00`. `tls/pass_front.py` dynamically normalizes this.
+3. **GenieACS Declarative Cache**: If `Device.JioSTB.USB.USBDebugging` is cached as `true` in MongoDB while ADB is not actually listening, GenieACS will not send the command over the wire. Unset the cached parameter in `db.devices` before queuing.
+4. **Remote Wake Unusable**: Connection Request on port 7547 actively resets TCP (`RST`). Trigger check-ins via cold boot (unplug power 5s, reconnect) during the WAN-off window.

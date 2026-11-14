@@ -77,7 +77,26 @@ On verified JHS firmware, disable only the stock launcher for user 0 after the r
 Use this repository's explicit Compose file:
 
 ```powershell
-docker compose -f C:\path\to\sideload-jiostb\tls\docker-compose.yml down
+docker compose -f .\tls\docker-compose.yml down
 ```
 
 Do not add `-v` unless intentionally deleting the named Mongo data volume.
+
+## Jio CWMP rejects SetParameterValues date format
+
+Jio STBs (notably the JMSC series) use a strict XML date parser that rejects standard ISO 8601 UTC dates containing `.000Z` (e.g. `2037-01-01T00:00:00.000Z`), causing the device to return a SOAP Fault 9003 (Invalid arguments). `tls/pass_front.py` automatically intercepts outgoing SOAP envelopes and rewrites UTC dates to numeric offset format `YYYY-MM-DDTHH:MM:SS+00:00` with matching `Content-Length`.
+
+## GenieACS skips queued SetParameterValues tasks
+
+GenieACS is declarative: if a device record in MongoDB (`db.devices`) already has `_value: true` cached for `Device.JioSTB.USB.USBDebugging`, GenieACS skips sending the CWMP RPC to the STB because it assumes the device already has that value. If the STB was cached as `true` during a previous partial run but port 5555 is not listening, clear the cached parameter in MongoDB:
+```javascript
+db.devices.updateOne(
+  {_id: '<DEVICE-ID>'},
+  {$unset: {'Device.JioSTB.USB.USBDebugging': ''}}
+);
+```
+Then re-queue ADB with `python scripts/queue_adb.py --device-id <DEVICE-ID>`.
+
+## Control Centre traps back button
+
+`com.jio.controlcentre` (Jio Control Centre) implements an `onPreviewKeyEvent` handler in Jetpack Compose that intercepts `KEYCODE_BACK` and logs "back pressed - debounced, ignoring", trapping the user in the control panel unless the physical Home button is pressed. Disabling `com.jio.controlcentre` via `pm disable-user --user 0 com.jio.controlcentre` permanently removes the trap and frees approximately 135 MB of RAM without affecting other services.
