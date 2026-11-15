@@ -1,176 +1,176 @@
-# Complete package comparison ? 2026-11-15
+# Complete package comparison - 2026-11-15
 
-Companion to [the detailed audit report](device-audit-2026-11-15.md). This table enumerates every package in the captured union, including Android framework packages, overlays, providers, services, disabled apps, and installed entertainment apps. No packages are filtered by name or presumed importance.
+Companion to [the detailed audit report](device-audit-2026-11-15.md). All 166 package names in the captured union are listed, including framework packages, overlays, providers, services, disabled apps, and entertainment apps.
 
-JHS: 145 installed, 118 system, 27 third-party, 37 disabled; zero additional retained-uninstalled package names. JMS: 148 installed, 31 disabled; retained-uninstalled and full per-package metadata were not captured. Absence means absent from that snapshot, not proven historical removal. System classification is PackageManager classification, so updated system apps can live under /data/app. Enabled means not present in the captured disabled-package list; see full dumps for per-component state.
+JHS: 145 installed, 118 system, 27 third-party, 37 disabled. JMS: 148 installed, 121 system, 27 third-party, 34 disabled after the three-package follow-up (31 before). Neither model exposes additional retained-uninstalled names. Absence means absent from the snapshot, not proven historical removal. System classification comes from PackageManager; updated system apps can live under /data/app. Enabled means absent from the disabled-package list; full private dumps preserve per-component state.
 
-All 140 packages in the earliest recovered JHS baseline remain installed. Five rows marked `Added` identify packages added since that baseline. Shevery was installed in later historical logs and is absent from both current installed/known JHS lists; a fully removed app will not necessarily remain in PackageManager records.
+All 140 packages in the earliest recovered JHS baseline remain installed. Five rows marked `Added` were added since that baseline. Shevery appears in historical installation logs but is absent from current installed and known JHS lists. Fully removed apps need not remain in PackageManager records. Both models now have complete version/classification captures; 17 shared packages have different version names.
 
-| Package | JHS class | JHS version | JHS state | JMS state | JHS baseline |
-| --- | --- | --- | --- | --- | --- |
-| `android` | System | 11 | Enabled | Enabled | Present |
-| `android.auto_generated_rro_product__` | Absent | - | Absent | Enabled | - |
-| `android.auto_generated_rro_vendor__` | Absent | - | Absent | Enabled | - |
-| `android.ext.services` | System | 2019-09 | Enabled | Enabled | Present |
-| `android.ext.shared` | System | 1 | Enabled | Enabled | Present |
-| `app.cricfy.tv` | Absent | - | Absent | Enabled | - |
-| `com.aksys.jiogamepad` | System | 0.1.3 | Enabled | Enabled | Present |
-| `com.amazon.amazonvideo.livingroom` | Third-party | 6.23.21+v15.4.0.880-armv7a | Disabled | Disabled | Present |
-| `com.android.app.jio.voiceassist` | System | 4.2.0.1 | Disabled | Disabled | Present |
-| `com.android.backupconfirm` | System | 11 | Enabled | Enabled | Present |
-| `com.android.bips` | System | 11 | Enabled | Absent | Present |
-| `com.android.bluetooth` | System | 11 | Enabled | Enabled | Present |
-| `com.android.bluetooth.auto_generated_rro_product__` | Absent | - | Absent | Enabled | - |
-| `com.android.bluetoothmidiservice` | System | R-initial | Enabled | Enabled | Present |
-| `com.android.camera2` | System | 2.0.002 | Enabled | Enabled | Present |
-| `com.android.captiveportallogin` | System | 2019-09 | Enabled | Enabled | Present |
-| `com.android.certinstaller` | System | 11 | Enabled | Enabled | Present |
-| `com.android.companiondevicemanager` | System | 11 | Enabled | Enabled | Present |
-| `com.android.cts.ctsshim` | System | 11-6508977 | Enabled | Enabled | Present |
-| `com.android.cts.priv.ctsshim` | System | 11-6508977 | Enabled | Enabled | Present |
-| `com.android.deskclock` | System | 11 | Enabled | Enabled | Present |
-| `com.android.dreams.basic` | System | 11 | Enabled | Enabled | Present |
-| `com.android.dynsystem` | System | 11 | Enabled | Enabled | Present |
-| `com.android.externalstorage` | System | 11 | Enabled | Enabled | Present |
-| `com.android.gallery3d` | Absent | - | Absent | Enabled | - |
-| `com.android.hotspot2.osulogin` | System | 11 | Enabled | Enabled | Present |
-| `com.android.htmlviewer` | System | 11 | Enabled | Enabled | Present |
-| `com.android.inputdevices` | System | 11 | Enabled | Enabled | Present |
-| `com.android.keychain` | System | 11 | Enabled | Enabled | Present |
-| `com.android.localtransport` | System | 11 | Enabled | Enabled | Present |
-| `com.android.location.fused` | System | 11 | Enabled | Enabled | Present |
-| `com.android.modulemetadata` | System | 11 | Enabled | Enabled | Present |
-| `com.android.mtp` | System | 11 | Enabled | Enabled | Present |
-| `com.android.music` | System | 11 | Enabled | Enabled | Present |
-| `com.android.musicfx` | System | 1.4 | Enabled | Enabled | Present |
-| `com.android.networkstack` | System | 2019-09 | Enabled | Enabled | Present |
-| `com.android.networkstack.permissionconfig` | System | 2019-09 | Enabled | Enabled | Present |
-| `com.android.networkstack.tethering` | System | 11 | Enabled | Enabled | Present |
-| `com.android.networkstack.tethering.droidlogic` | System | 1.0 | Enabled | Enabled | Present |
-| `com.android.networkstack.tethering.inprocess.droidlogic` | System | 1.0 | Enabled | Enabled | Present |
-| `com.android.packageinstaller` | System | 11 | Enabled | Enabled | Present |
-| `com.android.pacprocessor` | System | 11 | Enabled | Enabled | Present |
-| `com.android.permissioncontroller` | System | 30 system image | Enabled | Enabled | Present |
-| `com.android.printservice.recommendation` | System | 1.3.0 | Enabled | Absent | Present |
-| `com.android.printspooler` | System | 11 | Enabled | Enabled | Present |
-| `com.android.providers.calendar` | System | 11 | Enabled | Enabled | Present |
-| `com.android.providers.contacts` | System | 11 | Enabled | Enabled | Present |
-| `com.android.providers.downloads` | System | 11 | Enabled | Enabled | Present |
-| `com.android.providers.media` | System | 11 | Enabled | Enabled | Present |
-| `com.android.providers.media.module` | System | 11 | Enabled | Enabled | Present |
-| `com.android.providers.settings` | System | 11 | Enabled | Enabled | Present |
-| `com.android.providers.settings.auto_generated_rro_product__` | Absent | - | Absent | Enabled | - |
-| `com.android.providers.telephony` | System | 11 | Enabled | Absent | Present |
-| `com.android.providers.tv` | System | 11 | Enabled | Enabled | Present |
-| `com.android.providers.userdictionary` | System | 11 | Enabled | Enabled | Present |
-| `com.android.proxyhandler` | System | 11 | Enabled | Enabled | Present |
-| `com.android.se` | System | 11 | Enabled | Enabled | Present |
-| `com.android.settings.intelligence` | System | 11 | Enabled | Enabled | Present |
-| `com.android.sharedstoragebackup` | System | 11 | Enabled | Enabled | Present |
-| `com.android.shell` | System | 11 | Enabled | Enabled | Present |
-| `com.android.soundpicker` | System | 11 | Enabled | Enabled | Present |
-| `com.android.statementservice` | System | 1.0 | Enabled | Enabled | Present |
-| `com.android.systemui` | System | 11 | Enabled | Enabled | Present |
-| `com.android.systemui.auto_generated_rro_vendor__` | Absent | - | Absent | Enabled | - |
-| `com.android.systemui.statusbar.tv.TvStatusBar` | System | 1.0 | Enabled | Enabled | Present |
-| `com.android.talkback` | System | 1.2 | Disabled | Disabled | Present |
-| `com.android.tv.settings` | System | 1.0 | Enabled | Enabled | Present |
-| `com.android.vpndialogs` | System | 11 | Enabled | Enabled | Present |
-| `com.android.wallpaperbackup` | System | 11 | Enabled | Enabled | Present |
-| `com.android.webview` | System | 128.0.6613.88 | Enabled | Enabled | Present |
-| `com.android.wifi.resources` | System | R-initial | Enabled | Enabled | Present |
-| `com.communitake.remotecontrolservice` | System | 3.7-minApi24 | Enabled | Absent | Present |
-| `com.discoveryplus.tv.jiotv` | Third-party | 6.0.2 | Disabled | Disabled | Present |
-| `com.droidlogic` | System | 11 | Enabled | Enabled | Present |
-| `com.droidlogic.droidlivetvsettings` | Absent | - | Absent | Enabled | - |
-| `com.droidlogic.mictoggle` | Absent | - | Absent | Enabled | - |
-| `com.droidlogic.overlay` | Absent | - | Absent | Enabled | - |
-| `com.droidlogic.tvinput` | Absent | - | Absent | Enabled | - |
-| `com.droidlogic.wifion` | System | 1.0 | Enabled | Enabled | Present |
-| `com.esaba.downloader` | Third-party | 1.4.4 | Enabled | Enabled | Added |
-| `com.etvwin.androidtv` | Third-party | 3.4 | Disabled | Disabled | Present |
-| `com.gathin.tvhome` | Third-party | 3.4 | Enabled | Enabled | Added |
-| `com.google.android.apps.mediashell` | System | 0.0 | Enabled | Enabled | Present |
-| `com.hoichoi.mitv` | Third-party | 1.0.71 | Disabled | Disabled | Present |
-| `com.inn.nvengineer` | Third-party | 4.0.5-TV | Disabled | Disabled | Present |
-| `com.iwedia.bluetoothconnectionservice` | System | 11 | Enabled | Enabled | Present |
-| `com.iwedia.comedia.service` | System | 0.1 | Disabled | Absent | Present |
-| `com.iwedia.displayservice` | System | 11 | Enabled | Absent | Present |
-| `com.iwedia.httpupdate` | System | 1.0 | Disabled | Absent | Present |
-| `com.iwedia.ledmanager` | System | 1.0 | Enabled | Absent | Present |
-| `com.iwedia.notificationservice` | System | 11 | Enabled | Absent | Present |
-| `com.iwedia.pvodupdateservice` | System | 11 | Disabled | Absent | Present |
-| `com.iwedia.resetservice` | System | 11 | Enabled | Absent | Present |
-| `com.iwedia.tvinput` | System | 11 | Enabled | Absent | Present |
-| `com.iwedia.ui.rjio.launcher.reliance` | System | 45.00.00.176 | Disabled | Enabled | Present |
-| `com.iwedia.updatercuotaservice` | System | 11 | Disabled | Absent | Present |
-| `com.iwedia.updateservice` | System | 1.0 | Disabled | Absent | Present |
-| `com.iwedia.usbbenchmarkservice` | System | 11 | Enabled | Absent | Present |
-| `com.jio.adc.aka` | System | 1.0.2 | Enabled | Enabled | Present |
-| `com.jio.adc.embedded` | System | 4.1.11-STB | Enabled | Enabled | Present |
-| `com.jio.appoptimizer` | System | 2.4.4 | Enabled | Enabled | Present |
-| `com.jio.backgroundscheduler` | Absent | - | Absent | Enabled | - |
-| `com.jio.bioscopecontentservice` | System | 1.9.3.4 | Enabled | Enabled | Present |
-| `com.jio.controlcentre` | System | 10.1.3 | Disabled | Disabled | Present |
-| `com.jio.dialserver` | System | 1.3.3 | Disabled | Disabled | Present |
-| `com.jio.httpupdate` | Absent | - | Absent | Enabled | - |
-| `com.jio.jiobackgroundscheduler` | System | 11 | Enabled | Absent | Present |
-| `com.jio.jiocall` | Third-party | 5.7.3 | Disabled | Disabled | Present |
-| `com.jio.jiocloudpc` | Third-party | 4.2.38.2 | Disabled | Disabled | Present |
-| `com.jio.jiopay` | Third-party | 12.0.2 | Disabled | Disabled | Present |
-| `com.jio.keyboard.swarachakra` | System | 1.0.0.25 | Enabled | Enabled | Present |
-| `com.jio.media.jiobeats` | Third-party | 5.9.1 | Disabled | Disabled | Present |
-| `com.jio.media.jionewsstb` | Third-party | 1.0.15.15 | Disabled | Disabled | Present |
-| `com.jio.media.jiotvplus` | Third-party | 2.6.7 | Disabled | Disabled | Present |
-| `com.jio.media.livetv` | Third-party | 1.0.0 | Disabled | Disabled | Present |
-| `com.jio.myhome.mediasharedmp` | Third-party | 7.0.8 | Disabled | Disabled | Present |
-| `com.jio.myjiotv` | Third-party | 6.0.38 | Disabled | Disabled | Present |
-| `com.jio.mymusic.app` | Third-party | 1.0.18 | Enabled | Enabled | Present |
-| `com.jio.overlay.common` | Absent | - | Absent | Enabled | - |
-| `com.jio.product.exploremyremote` | System | 1.0.0.1 | Enabled | Enabled | Present |
-| `com.jio.profileutility` | System | 9.0.8 | Enabled | Enabled | Present |
-| `com.jio.remote.btserver` | System | 6.0.13 | Enabled | Enabled | Present |
-| `com.jio.screensaver` | System | 6.1 | Disabled | Disabled | Present |
-| `com.jio.sdk` | Absent | - | Absent | Enabled | - |
-| `com.jio.smartmemorymanager` | System | 2.0.3 | Enabled | Enabled | Present |
-| `com.jio.stb.bluetooth.profile.overlay` | Absent | - | Absent | Enabled | - |
-| `com.jio.stb.bot` | System | 1.18.0 | Disabled | Disabled | Present |
-| `com.jio.stb.catv` | System | 1.0.66.34.43 | Disabled | Enabled | Present |
-| `com.jio.stb.hotellauncher` | Absent | - | Absent | Disabled | - |
-| `com.jio.stb.jioservice` | Absent | - | Absent | Enabled | - |
-| `com.jio.stb.rcuupdate` | Absent | - | Absent | Enabled | - |
-| `com.jio.stb.remotediagnose` | System | 1.0.3 | Enabled | Enabled | Present |
-| `com.jio.stb.settings.provider.overlay` | Absent | - | Absent | Enabled | - |
-| `com.jio.stb.tifextn` | System | 0.1 | Enabled | Enabled | Present |
-| `com.jio.stbadservice` | System | 2.0.21 | Disabled | Disabled | Present |
-| `com.jio.stbwidget` | System | 1.0.2 | Enabled | Enabled | Present |
-| `com.jio.store` | System | 1.7.6.9 | Enabled | Enabled | Present |
-| `com.jio.systemstats` | System | 1.0.5 | Enabled | Enabled | Present |
-| `com.jio.tr069client` | System | 3.3.0 | Disabled | Disabled | Present |
-| `com.jio.universalsetup` | System | 1.1.8 | Enabled | Enabled | Present |
-| `com.jio.usbupdate` | Absent | - | Absent | Enabled | - |
-| `com.jio.web` | Third-party | 8.0.2.2 | Disabled | Disabled | Present |
-| `com.jio.yt` | Third-party | 4.4.7 | Disabled | Disabled | Present |
-| `com.jiostb.fti` | System | 10.1.7 | Enabled | Enabled | Present |
-| `com.jiostb.jiogames` | Third-party | 3.0.0.1f | Disabled | Disabled | Present |
-| `com.jiotv.sonyliv` | Third-party | 3.12.6 | Disabled | Disabled | Present |
-| `com.klevico.monet` | Third-party | 1.1.0 | Enabled | Enabled | Added |
-| `com.media.jio.sso.stb` | System | 8.0.02 | Enabled | Enabled | Present |
-| `com.netflix.ninja` | System | 13.1.4 build 26080 | Enabled | Enabled | Present |
-| `com.netflix.partnertoken` | System | 2.1.8 | Disabled | Disabled | Present |
-| `com.omni.sci` | System | 5.0.0_RelianceJio | Enabled | Enabled | Present |
-| `com.omni.simplesetup` | System | 5.3.6_RelianceJio | Enabled | Enabled | Present |
-| `com.omni.touchclient` | System | 1.47 | Enabled | Enabled | Present |
-| `com.rjil.jio.stb.commandreceiver` | System | 1.0 | Disabled | Disabled | Present |
-| `com.rjil.jiostblogservice` | System | 8 | Enabled | Absent | Present |
-| `com.rjil.jiostbsetting` | System | 15.1.5 | Enabled | Enabled | Present |
-| `com.rjil.podlogservice` | System | 39.0.0 | Enabled | Enabled | Present |
-| `com.rjl.mobileremote.receiver` | System | 18.1.48 | Enabled | Enabled | Present |
-| `com.suntv.sunnxt` | Third-party | 8.0.42 | Disabled | Disabled | Present |
-| `com.svox.pico` | System | 1.2 | Enabled | Enabled | Present |
-| `com.teamviewer.quicksupport.addon.jio_stb` | System | 15.76.9142 | Enabled | Enabled | Present |
-| `com.zee5.aosp` | Third-party | 5.90.7 | Disabled | Disabled | Present |
-| `in.startv.hotstar` | Third-party | 26.10.12.0 | Enabled | Enabled | Present |
-| `insight.tr069.client` | System | 3.0.9 | Enabled | Absent | Present |
-| `io.gh.reisxd.tizentube.cobalt` | Third-party | 2.0.3 | Enabled | Enabled | Added |
-| `org.smarttube.stable` | Third-party | 32.71 | Enabled | Enabled | Added |
+| Package | JHS class | JHS version | JHS state | JMS class | JMS version | JMS state | JHS baseline |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `android` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `android.auto_generated_rro_product__` | Absent | - | Absent | System | 1.0 | Enabled | - |
+| `android.auto_generated_rro_vendor__` | Absent | - | Absent | System | 1.0 | Enabled | - |
+| `android.ext.services` | System | 2019-09 | Enabled | System | 2019-09 | Enabled | Present |
+| `android.ext.shared` | System | 1 | Enabled | System | 1 | Enabled | Present |
+| `app.cricfy.tv` | Absent | - | Absent | Third-party | 7.4 | Enabled | - |
+| `com.aksys.jiogamepad` | System | 0.1.3 | Enabled | System | 0.1.3 | Enabled | Present |
+| `com.amazon.amazonvideo.livingroom` | Third-party | 6.23.21+v15.4.0.880-armv7a | Disabled | Third-party | 6.24.3+v16.0.0.12-allAbis | Disabled | Present |
+| `com.android.app.jio.voiceassist` | System | 4.2.0.1 | Disabled | System | 4.2.0.1 | Disabled | Present |
+| `com.android.backupconfirm` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.bips` | System | 11 | Enabled | Absent | - | Absent | Present |
+| `com.android.bluetooth` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.bluetooth.auto_generated_rro_product__` | Absent | - | Absent | System | 1.0 | Enabled | - |
+| `com.android.bluetoothmidiservice` | System | R-initial | Enabled | System | R-initial | Enabled | Present |
+| `com.android.camera2` | System | 2.0.002 | Enabled | System | 2.0.002 | Enabled | Present |
+| `com.android.captiveportallogin` | System | 2019-09 | Enabled | System | 2019-09 | Enabled | Present |
+| `com.android.certinstaller` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.companiondevicemanager` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.cts.ctsshim` | System | 11-6508977 | Enabled | System | 11-6508977 | Enabled | Present |
+| `com.android.cts.priv.ctsshim` | System | 11-6508977 | Enabled | System | 11-6508977 | Enabled | Present |
+| `com.android.deskclock` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.dreams.basic` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.dynsystem` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.externalstorage` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.gallery3d` | Absent | - | Absent | System | 1.1.40030 | Enabled | - |
+| `com.android.hotspot2.osulogin` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.htmlviewer` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.inputdevices` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.keychain` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.localtransport` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.location.fused` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.modulemetadata` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.mtp` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.music` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.musicfx` | System | 1.4 | Enabled | System | 1.4 | Enabled | Present |
+| `com.android.networkstack` | System | 2019-09 | Enabled | System | 2019-09 | Enabled | Present |
+| `com.android.networkstack.permissionconfig` | System | 2019-09 | Enabled | System | 2019-09 | Enabled | Present |
+| `com.android.networkstack.tethering` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.networkstack.tethering.droidlogic` | System | 1.0 | Enabled | System | 1.0 | Enabled | Present |
+| `com.android.networkstack.tethering.inprocess.droidlogic` | System | 1.0 | Enabled | System | 1.0 | Enabled | Present |
+| `com.android.packageinstaller` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.pacprocessor` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.permissioncontroller` | System | 30 system image | Enabled | System | 30 system image | Enabled | Present |
+| `com.android.printservice.recommendation` | System | 1.3.0 | Enabled | Absent | - | Absent | Present |
+| `com.android.printspooler` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.providers.calendar` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.providers.contacts` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.providers.downloads` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.providers.media` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.providers.media.module` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.providers.settings` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.providers.settings.auto_generated_rro_product__` | Absent | - | Absent | System | 1.0 | Enabled | - |
+| `com.android.providers.telephony` | System | 11 | Enabled | Absent | - | Absent | Present |
+| `com.android.providers.tv` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.providers.userdictionary` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.proxyhandler` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.se` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.settings.intelligence` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.sharedstoragebackup` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.shell` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.soundpicker` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.statementservice` | System | 1.0 | Enabled | System | 1.0 | Enabled | Present |
+| `com.android.systemui` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.systemui.auto_generated_rro_vendor__` | Absent | - | Absent | System | 1.0 | Enabled | - |
+| `com.android.systemui.statusbar.tv.TvStatusBar` | System | 1.0 | Enabled | System | 1.0 | Enabled | Present |
+| `com.android.talkback` | System | 1.2 | Disabled | System | 1.2 | Disabled | Present |
+| `com.android.tv.settings` | System | 1.0 | Enabled | System | 1.0 | Enabled | Present |
+| `com.android.vpndialogs` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.wallpaperbackup` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.android.webview` | System | 128.0.6613.88 | Enabled | System | 128.0.6613.88 | Enabled | Present |
+| `com.android.wifi.resources` | System | R-initial | Enabled | System | R-initial | Enabled | Present |
+| `com.communitake.remotecontrolservice` | System | 3.7-minApi24 | Enabled | Absent | - | Absent | Present |
+| `com.discoveryplus.tv.jiotv` | Third-party | 6.0.2 | Disabled | Third-party | 6.0.6 | Disabled | Present |
+| `com.droidlogic` | System | 11 | Enabled | System | 11 | Enabled | Present |
+| `com.droidlogic.droidlivetvsettings` | Absent | - | Absent | System | 1.0 | Enabled | - |
+| `com.droidlogic.mictoggle` | Absent | - | Absent | System | 11 | Enabled | - |
+| `com.droidlogic.overlay` | Absent | - | Absent | System | 1.0 | Enabled | - |
+| `com.droidlogic.tvinput` | Absent | - | Absent | System | 1.0 | Enabled | - |
+| `com.droidlogic.wifion` | System | 1.0 | Enabled | System | 1.0 | Enabled | Present |
+| `com.esaba.downloader` | Third-party | 1.4.4 | Enabled | Third-party | 1.4.4 | Enabled | Added |
+| `com.etvwin.androidtv` | Third-party | 3.4 | Disabled | Third-party | 3.6 | Disabled | Present |
+| `com.gathin.tvhome` | Third-party | 3.4 | Enabled | Third-party | 3.4 | Enabled | Added |
+| `com.google.android.apps.mediashell` | System | 0.0 | Enabled | System | 0.0 | Enabled | Present |
+| `com.hoichoi.mitv` | Third-party | 1.0.71 | Disabled | Third-party | 1.0.71 | Disabled | Present |
+| `com.inn.nvengineer` | Third-party | 4.0.5-TV | Disabled | Third-party | 4.0.5-TV | Disabled | Present |
+| `com.iwedia.bluetoothconnectionservice` | System | 11 | Enabled | System | 37 | Enabled | Present |
+| `com.iwedia.comedia.service` | System | 0.1 | Disabled | Absent | - | Absent | Present |
+| `com.iwedia.displayservice` | System | 11 | Enabled | Absent | - | Absent | Present |
+| `com.iwedia.httpupdate` | System | 1.0 | Disabled | Absent | - | Absent | Present |
+| `com.iwedia.ledmanager` | System | 1.0 | Enabled | Absent | - | Absent | Present |
+| `com.iwedia.notificationservice` | System | 11 | Enabled | Absent | - | Absent | Present |
+| `com.iwedia.pvodupdateservice` | System | 11 | Disabled | Absent | - | Absent | Present |
+| `com.iwedia.resetservice` | System | 11 | Enabled | Absent | - | Absent | Present |
+| `com.iwedia.tvinput` | System | 11 | Enabled | Absent | - | Absent | Present |
+| `com.iwedia.ui.rjio.launcher.reliance` | System | 45.00.00.176 | Disabled | System | 45.00.00.176 | Enabled | Present |
+| `com.iwedia.updatercuotaservice` | System | 11 | Disabled | Absent | - | Absent | Present |
+| `com.iwedia.updateservice` | System | 1.0 | Disabled | Absent | - | Absent | Present |
+| `com.iwedia.usbbenchmarkservice` | System | 11 | Enabled | Absent | - | Absent | Present |
+| `com.jio.adc.aka` | System | 1.0.2 | Enabled | System | 1.0.2 | Enabled | Present |
+| `com.jio.adc.embedded` | System | 4.1.11-STB | Enabled | System | 4.1.11-STB | Enabled | Present |
+| `com.jio.appoptimizer` | System | 2.4.4 | Enabled | System | 2.4.6 | Enabled | Present |
+| `com.jio.backgroundscheduler` | Absent | - | Absent | System | 1.0.0 | Disabled | - |
+| `com.jio.bioscopecontentservice` | System | 1.9.3.4 | Enabled | System | 2.0.0.7 | Enabled | Present |
+| `com.jio.controlcentre` | System | 10.1.3 | Disabled | System | 10.1.3 | Disabled | Present |
+| `com.jio.dialserver` | System | 1.3.3 | Disabled | System | 1.3.8 | Disabled | Present |
+| `com.jio.httpupdate` | Absent | - | Absent | System | 2.1.1 | Disabled | - |
+| `com.jio.jiobackgroundscheduler` | System | 11 | Enabled | Absent | - | Absent | Present |
+| `com.jio.jiocall` | Third-party | 5.7.3 | Disabled | Third-party | 5.7.3 | Disabled | Present |
+| `com.jio.jiocloudpc` | Third-party | 4.2.38.2 | Disabled | Third-party | 4.2.38.2 | Disabled | Present |
+| `com.jio.jiopay` | Third-party | 12.0.2 | Disabled | Third-party | 12.0.2 | Disabled | Present |
+| `com.jio.keyboard.swarachakra` | System | 1.0.0.25 | Enabled | System | 1.0.0.26 | Enabled | Present |
+| `com.jio.media.jiobeats` | Third-party | 5.9.1 | Disabled | Third-party | 5.9.1 | Disabled | Present |
+| `com.jio.media.jionewsstb` | Third-party | 1.0.15.15 | Disabled | Third-party | 1.0.15.18 | Disabled | Present |
+| `com.jio.media.jiotvplus` | Third-party | 2.6.7 | Disabled | Third-party | 2.6.7 | Disabled | Present |
+| `com.jio.media.livetv` | Third-party | 1.0.0 | Disabled | Third-party | 1.0.0 | Disabled | Present |
+| `com.jio.myhome.mediasharedmp` | Third-party | 7.0.8 | Disabled | Third-party | 7.0.8 | Disabled | Present |
+| `com.jio.myjiotv` | Third-party | 6.0.38 | Disabled | Third-party | 6.0.38 | Disabled | Present |
+| `com.jio.mymusic.app` | Third-party | 1.0.18 | Enabled | Third-party | 1.0.18 | Enabled | Present |
+| `com.jio.overlay.common` | Absent | - | Absent | System | 1.0 | Enabled | - |
+| `com.jio.product.exploremyremote` | System | 1.0.0.1 | Enabled | System | 1.0.0.1 | Enabled | Present |
+| `com.jio.profileutility` | System | 9.0.8 | Enabled | System | 9.0.8 | Enabled | Present |
+| `com.jio.remote.btserver` | System | 6.0.13 | Enabled | System | 6.0.13 | Enabled | Present |
+| `com.jio.screensaver` | System | 6.1 | Disabled | System | 6.1 | Disabled | Present |
+| `com.jio.sdk` | Absent | - | Absent | System | 2.8.1 | Enabled | - |
+| `com.jio.smartmemorymanager` | System | 2.0.3 | Enabled | System | 2.0.5 | Enabled | Present |
+| `com.jio.stb.bluetooth.profile.overlay` | Absent | - | Absent | System | 1.0 | Enabled | - |
+| `com.jio.stb.bot` | System | 1.18.0 | Disabled | System | 1.18.0 | Disabled | Present |
+| `com.jio.stb.catv` | System | 1.0.66.34.43 | Disabled | System | 1.0.66.34.43 | Enabled | Present |
+| `com.jio.stb.hotellauncher` | Absent | - | Absent | System | 1.2.35 | Disabled | - |
+| `com.jio.stb.jioservice` | Absent | - | Absent | System | 10.2 | Enabled | - |
+| `com.jio.stb.rcuupdate` | Absent | - | Absent | System | 2.5.0 | Enabled | - |
+| `com.jio.stb.remotediagnose` | System | 1.0.3 | Enabled | System | 1.0.5 | Enabled | Present |
+| `com.jio.stb.settings.provider.overlay` | Absent | - | Absent | System | 1.0 | Enabled | - |
+| `com.jio.stb.tifextn` | System | 0.1 | Enabled | System | 3.61.000 | Enabled | Present |
+| `com.jio.stbadservice` | System | 2.0.21 | Disabled | System | 2.0.21 | Disabled | Present |
+| `com.jio.stbwidget` | System | 1.0.2 | Enabled | System | 1.0.2 | Enabled | Present |
+| `com.jio.store` | System | 1.7.6.9 | Enabled | System | 1.7.6.9 | Enabled | Present |
+| `com.jio.systemstats` | System | 1.0.5 | Enabled | System | 1.0.5 | Enabled | Present |
+| `com.jio.tr069client` | System | 3.3.0 | Disabled | System | 4.2.3 | Disabled | Present |
+| `com.jio.universalsetup` | System | 1.1.8 | Enabled | System | 1.1.7 | Enabled | Present |
+| `com.jio.usbupdate` | Absent | - | Absent | System | 2.3.5 | Disabled | - |
+| `com.jio.web` | Third-party | 8.0.2.2 | Disabled | System | 8.0.3.7 | Disabled | Present |
+| `com.jio.yt` | Third-party | 4.4.7 | Disabled | Third-party | 7.2.1.3 | Disabled | Present |
+| `com.jiostb.fti` | System | 10.1.7 | Enabled | System | 10.1.7 | Enabled | Present |
+| `com.jiostb.jiogames` | Third-party | 3.0.0.1f | Disabled | Third-party | 3.0.0.1f | Disabled | Present |
+| `com.jiotv.sonyliv` | Third-party | 3.12.6 | Disabled | Third-party | 3.12.6 | Disabled | Present |
+| `com.klevico.monet` | Third-party | 1.1.0 | Enabled | Third-party | 1.1.0 | Enabled | Added |
+| `com.media.jio.sso.stb` | System | 8.0.02 | Enabled | System | 8.0.02 | Enabled | Present |
+| `com.netflix.ninja` | System | 13.1.4 build 26080 | Enabled | System | 13.1.4 build 26080 | Enabled | Present |
+| `com.netflix.partnertoken` | System | 2.1.8 | Disabled | System | 2.1.8 | Disabled | Present |
+| `com.omni.sci` | System | 5.0.0_RelianceJio | Enabled | System | 5.0.0_RelianceJio | Enabled | Present |
+| `com.omni.simplesetup` | System | 5.3.6_RelianceJio | Enabled | System | 5.4.0_RelianceJio | Enabled | Present |
+| `com.omni.touchclient` | System | 1.47 | Enabled | System | 1.47 | Enabled | Present |
+| `com.rjil.jio.stb.commandreceiver` | System | 1.0 | Disabled | System | 1.0 | Disabled | Present |
+| `com.rjil.jiostblogservice` | System | 8 | Enabled | Absent | - | Absent | Present |
+| `com.rjil.jiostbsetting` | System | 15.1.5 | Enabled | System | 15.1.5 | Enabled | Present |
+| `com.rjil.podlogservice` | System | 39.0.0 | Enabled | System | 39.0.0 | Enabled | Present |
+| `com.rjl.mobileremote.receiver` | System | 18.1.48 | Enabled | System | 18.1.48 | Enabled | Present |
+| `com.suntv.sunnxt` | Third-party | 8.0.42 | Disabled | Third-party | 8.0.42 | Disabled | Present |
+| `com.svox.pico` | System | 1.2 | Enabled | System | 1.2 | Enabled | Present |
+| `com.teamviewer.quicksupport.addon.jio_stb` | System | 15.76.9142 | Enabled | System | 15.76.9142 | Enabled | Present |
+| `com.zee5.aosp` | Third-party | 5.90.7 | Disabled | Third-party | 5.90.7 | Disabled | Present |
+| `in.startv.hotstar` | Third-party | 26.10.12.0 | Enabled | Third-party | 26.10.12.0 | Enabled | Present |
+| `insight.tr069.client` | System | 3.0.9 | Enabled | Absent | - | Absent | Present |
+| `io.gh.reisxd.tizentube.cobalt` | Third-party | 2.0.3 | Enabled | Third-party | 2.0.3 | Enabled | Added |
+| `org.smarttube.stable` | Third-party | 32.71 | Enabled | Third-party | 32.71 | Enabled | Added |

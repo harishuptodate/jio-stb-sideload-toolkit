@@ -74,7 +74,10 @@ Known implications:
 
 These were disabled on verified JMSC200A firmware (`25.1.9`) after persistent ADB was established:
 
-- `com.jio.tr069client` — blocks remote firmware downgrade / ADB revocation
+- `com.jio.httpupdate` — HTTP firmware updater
+- `com.jio.usbupdate` — USB/OTA update utility
+- `com.jio.backgroundscheduler` — boot-started background scheduler
+- `com.jio.tr069client` — Jio CWMP management client; ADB persistence must be verified separately
 - `com.rjil.jio.stb.commandreceiver`
 - `com.jio.stbadservice`
 - `com.jio.controlcentre` — eliminates Compose back-button trap and saves ~135 MB RAM

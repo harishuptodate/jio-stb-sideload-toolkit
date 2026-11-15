@@ -99,4 +99,12 @@ Initial enablement and launcher observations on **JMSC200A**, running firmware `
    - SmartTube (`SmartTube_stable_32.71_armeabi-v7a.apk`)
    - Cobalt (`cobalt-arm.apk`)
    - Downloader (`com.esaba.downloader_1.4.4-49_minAPI16(nodpi)_apkmirror.com.apk`)
-   - Monet Launcher (`monet-launcher.apk` — safe rollback fallback)
+   - Monet Launcher (`monet-launcher.apk` â€” safe rollback fallback)
+
+## Full follow-up audit (2026-11-15)
+
+The same full before/after collector used for JHS has now captured JMS twice, including complete package metadata and retained-uninstalled queries. JMS has 148 installed packages (121 system, 27 third-party), no extra retained-uninstalled names, and 34 disabled packages after this follow-up. Both software reboot observations recovered authorized ADB and showed CleanYourTV foreground through the observation window.
+
+The standalone `JmsCore` profile now includes three packages present in the original setup policy but previously omitted: `com.jio.httpupdate`, `com.jio.usbupdate`, and `com.jio.backgroundscheduler`. Their updater/scheduler components were inspected, then the packages were disabled reversibly and verified still disabled after reboot. This intentionally disables their update/scheduling functions; it is separate from the proven JioService Home-restoration mechanism. Do not disable JioService.
+
+See the [detailed evidence, rollback, and remaining acceptance limits](device-audit-2026-11-15.md#full-jms-follow-up-and-reversible-robustness-change). Extended idle/overnight behavior remains an open check.

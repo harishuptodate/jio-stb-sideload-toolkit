@@ -53,6 +53,9 @@ $optional = @(
 )
 
 $jmsCore = @(
+    'com.jio.httpupdate',
+    'com.jio.usbupdate',
+    'com.jio.backgroundscheduler',
     'com.jio.tr069client',
     'com.rjil.jio.stb.commandreceiver',
     'com.jio.stbadservice',

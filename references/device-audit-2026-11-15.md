@@ -1,4 +1,4 @@
-# JHS/JMS forensic comparison — 2026-11-15
+# JHS/JMS forensic comparison â€” 2026-11-15
 
 ## Finding and present status
 
@@ -16,7 +16,7 @@ The JHS capture contains 45 command outputs before and 45 after reboot. Each mai
 
 Other evidence includes the reboot timeline, navigation results, screenshot, copied historical JHS baseline/change records, and JMS restoring-method disassembly. Raw evidence can contain serials, accounts, MACs, SSIDs, addresses, and other private configuration. Keep `.state` out of Git.
 
-The saved JMS snapshot is less complete: it has all 148 installed package names/paths/UIDs and the disabled list, but not a full PackageManager dump or a retained-uninstalled list. Per-package versions and permissions for all JMS packages therefore cannot be reconstructed from it. The comparison inventory marks these limits rather than inventing parity. No switch back is required to establish the launcher cause; a future full JMS capture can fill those metadata gaps.
+The original saved JMS snapshot lacked full PackageManager metadata and a retained-uninstalled list. The later JMS follow-up on the same date filled those gaps with `.state/audit-jms-20261115-140301/` and a second capture after the three-package robustness change at `.state/audit-jms-20261115-140645/`. Both use the same 45-command before/after collection as JHS. The complete comparison inventory now includes both models' versions and system classifications.
 
 ## Device identity and important differences
 
@@ -29,9 +29,9 @@ The saved JMS snapshot is less complete: it has all 148 installed package names/
 | Reported security patch | 2024-06-01 | 2024-02-05 |
 | Advertised Android app ABI | armeabi-v7a, armeabi | armeabi-v7a, armeabi |
 | Installed packages in capture | 145 | 148 |
-| System / third-party classification | 118 / 27 | Not separately captured |
-| Disabled user-0 packages | 37 | 31 |
-| Retained known but uninstalled user-0 packages | 0 exposed by PackageManager | Not captured |
+| System / third-party classification | 118 / 27 | 121 / 27 |
+| Disabled user-0 packages | 37 | 31 initially; 34 after the follow-up robustness change |
+| Retained known but uninstalled user-0 packages | 0 exposed by PackageManager | 0 exposed by PackageManager |
 | Resolved Android Home | CleanYourTV | Stock Jio launcher |
 | Observed foreground Home | CleanYourTV | CleanYourTV through redirect |
 | Stock launcher user-0 state | installed, disabled-user, not suspended | installed, enabled, not suspended |
@@ -39,9 +39,9 @@ The saved JMS snapshot is less complete: it has all 148 installed package names/
 | Other bound accessibility helper | iWedia LED Manager | None in saved snapshot |
 | JioService Android package | Absent | com.jio.stb.jioservice present |
 | Active model-specific TR-069 service | insight.tr069.client remains enabled | com.jio.tr069client disabled after setup |
-| ADB | Authorized; recovered after audited reboot | Authorized; recovered after earlier tested reboots |
+| ADB | Authorized; recovered after audited reboot | Authorized; recovered after both follow-up audited reboots |
 
-The full package union and JHS versions are in [device-package-inventory-2026-11-15.md](device-package-inventory-2026-11-15.md). Absence on one model is not evidence that we removed a package from it.
+The full package union and both models' versions/classifications are in [device-package-inventory-2026-11-15.md](device-package-inventory-2026-11-15.md). Absence on one model is not evidence that we removed a package from it.
 
 ## Reconstruction of JHS changes
 
@@ -75,9 +75,9 @@ Method: capture before state; issue one `adb reboot`; sample boot completion, up
 | --- | --- |
 | Before reboot | CleanYourTV resolved and foreground Home |
 | About 5 seconds | ADB query timed out |
-| About 15–45 seconds | ADB transport not available at sampled instants |
+| About 15â€“45 seconds | ADB transport not available at sampled instants |
 | About 55.6 seconds | First successful sample: boot_completed=1, uptime about 49.4 seconds, CleanYourTV foreground |
-| About 66–117 seconds | CleanYourTV remained foreground in each sample |
+| About 66â€“117 seconds | CleanYourTV remained foreground in each sample |
 | Around two minutes | Full after snapshot succeeded; all disabled-package memberships unchanged |
 | Crash buffer before and after | Empty |
 | Accessibility after boot | LED Manager bound; no crashed services; no CleanYourTV redirect helper |
@@ -85,7 +85,7 @@ Method: capture before state; issue one `adb reboot`; sample boot completion, up
 
 These are sampled host-relative times, not exact screen-visible boot latency or remote input latency. The first successful sample bounds what was visible to ADB; it does not identify the exact frame when the launcher appeared. No physical power removal was performed by the agent in this audit.
 
-Stable settings: stay-awake 3, screen timeout 2147483647, normal stored animation scales, and every secure setting in the before/after snapshots. Expected changes include boot count 45→46, telemetry timestamps, Jio inactivity-status timestamp, and remote-key counters reset to zero. The Jio inactivity JSON still reports inactivity disabled.
+Stable settings: stay-awake 3, screen timeout 2147483647, normal stored animation scales, and every secure setting in the before/after snapshots. Expected changes include boot count 45â†’46, telemetry timestamps, Jio inactivity-status timestamp, and remote-key counters reset to zero. The Jio inactivity JSON still reports inactivity disabled.
 
 The final checkpoint at roughly 657 seconds of device uptime still showed CleanYourTV foreground, the same stay-awake/screen-timeout values, and an empty crash buffer. This is a short observation after reboot/navigation, not an overnight or full standby-wake test.
 
@@ -152,11 +152,35 @@ Early conversation referred to JMS 24.1.39, but the recovered device observation
 ## Original-repo versus standalone gaps
 
 1. The standalone installer omitted stock-launcher suspension. Testing the original suspension sequence still failed on this exact JMS build. Record that failed evidence rather than treating upstream comments as universal guarantees.
-2. The original post-setup script handles com.jio.httpupdate, com.jio.usbupdate, and com.jio.backgroundscheduler. These exist in the saved JMS inventory and are absent from its disabled list, but are missing from standalone JmsCore. Their role/state should be reviewed on JMS before a reversible disable test. No causal link to Home restoration is proven.
+2. The original post-setup script handles com.jio.httpupdate, com.jio.usbupdate, and com.jio.backgroundscheduler. These were enabled on JMS and omitted from standalone JmsCore. The follow-up inspected their APK services/receivers and update permissions, added them to JmsCore, and disabled them reversibly. All three stayed disabled after the subsequent reboot. This closes an update/scheduling profile omission; no causal link to Home restoration is proven.
 3. On JHS those exact JMS package names are absent; the iWedia updater counterparts are disabled. JHS also has enabled com.jio.jiobackgroundscheduler, a different package. Prefix similarity is insufficient grounds to disable it.
 4. Do not copy the JHS comedia/CATV changes to JMS. Their package architecture differs, and disabling JHS television services has intentional LiveTV/tuner consequences.
 5. Historical JMS documentation said fully verified before an adequate persistence/idle test. Treat the newer regression and redirect results as the authoritative scope. The old JMS reference contained a stale 9003 date-fault statement; it has been corrected to the actual captured 9007 fault.
 6. A bare `adb.exe` in the final supplemental checkpoint selected an older laptop PATH installation and produced an ADB server-version mismatch. The command was corrected to the bundled executable's absolute path and the final checkpoint succeeded. The main collector already uses an absolute path. Use one ADB distribution consistently; transport failures caused by restarting the host server are distinct from device authorization/persistence faults. Bundled ADB here reports 37.0.1.
+
+## Full JMS follow-up and reversible robustness change
+
+Two additional software reboot experiments used the same collection method as JHS. The first captured the existing configuration without changing it. The second followed the three-package change below. No Home or launcher command was injected during either boot observation.
+
+| Check | Existing configuration | After updater/scheduler change |
+| --- | --- | --- |
+| Installed / system / third-party packages | 148 / 121 / 27 | 148 / 121 / 27 |
+| Disabled user-0 packages | 31 | 34 |
+| First successful boot sample | About 55.8 seconds; CleanYourTV foreground | About 55.6 seconds; CleanYourTV foreground |
+| Later boot samples through about 117 seconds | CleanYourTV foreground | CleanYourTV foreground |
+| Disabled membership across each reboot | Unchanged | Unchanged |
+| Secure and system settings across each reboot | Unchanged | Unchanged |
+| Crash buffer after reboot | Empty | Empty |
+| Home helper | Bound, no crashed services reported | Bound, no crashed services reported |
+| Authorized ADB recovery | Passed | Passed |
+
+The update/scheduler APK inspection identified `HttpUpdateService` in `com.jio.httpupdate` (2.1.1), `OtaUpdateService` in `com.jio.usbupdate` (2.3.5), and `BackgroundSchedulerService` in `com.jio.backgroundscheduler` (1.0.0), with boot/update-related receivers. The updater APKs request recovery/reboot permissions. These observations justify reviewing their original-repo update-blocking role; they do not prove an actual firmware update or launcher reset occurred yesterday.
+
+Exactly these three packages changed from enabled to disabled-user; nothing was uninstalled or cleared. The change report is `.state/package-change-20261115-140645.json`. To revert this follow-up only, use the bundled ADB with `-s IP:5555 shell pm enable --user 0 PACKAGE` for each of those three names. Disabling them intentionally removes their normal update/scheduling functions, including USB update handling. Do not apply these JMS package names to unrelated models.
+
+After the second reboot, the nine UI destinations listed above were tested again on JMS. Android Settings, Network, Bluetooth pairing, Jio Settings, SmartTube, TizenTube, Downloader, JioStore, and MyMusic opened; every injected Home returned to CleanYourTV. This checks navigation, not playback or physical remote behavior. Full results and supplemental hardware/service dumps are saved with the second audit. No launcher APK, theme, power setting, or JioService state was changed in this follow-up.
+
+The 17 shared-package version differences and model-only package sets are preserved in the complete inventory. They reinforce that identical package toggles across models are not a valid goal. The direct Home-restoration evidence remains JMS JioService's enabling code; the redirect continues to work around that policy. Overnight/extended idle remains unverified, and these two new tests were software reboots rather than a new physical power cycle.
 
 ## Robustness acceptance gates
 
@@ -166,7 +190,7 @@ For JMS builds with the demonstrated restoration behavior, use the existing redi
 
 Require two software reboots, an owner-performed power cycle, an owner physical-remote check, and an overnight/idle check before calling long-term reliability verified. Keep rollback state per model and device. Do not disable JioService, Bluetooth, display, input, provisioning, or native DTV services to obtain superficial package parity.
 
-The reusable collector is `scripts/audit_stb.py`: default capture is read-only; `--reboot` explicitly adds one reboot and timed recovery capture. On a future JMS audit, use the same collector once to fill the known metadata gaps; do not repeat ACS enablement or reset the configured box merely to compare it.
+The reusable collector is `scripts/audit_stb.py`: default capture is read-only; `--reboot` explicitly adds one reboot and timed recovery capture. The JMS follow-up has now used the same collector and filled the metadata gaps; do not repeat ACS enablement or reset the configured box merely to compare it.
 
 ## Limits
 
