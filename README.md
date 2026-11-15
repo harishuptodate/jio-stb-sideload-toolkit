@@ -9,10 +9,13 @@ This repository contains everything the workflow consumes locally: Windows ADB, 
 | Device | Firmware | Status |
 | --- | --- | --- |
 | JHSC200 v1 / JioOS 2.0 | `STB-JHSC200-11.3.46` | Completed and verified |
+| JMSC200A | `25.1.9` | ADB and Home redirect tested across reboots and owner power cycle; extended idle pending |
 | JMSC200Av2 | `22.1.09`, `24.1.39`, `25.1.9` reported upstream | Provisional; stop on certificate or ACS differences |
 | Base JMSC200A and other variants | Any | Unverified; diagnostics only |
 
 Support is exact-model and exact-firmware specific. Do not treat JHS and JMS as interchangeable. This project does not flash firmware, unlock the bootloader, root Android, or bypass account/payment services.
+
+See the [2026-11-15 device comparison audit](references/device-audit-2026-11-15.md) and [complete package inventory](references/device-package-inventory-2026-11-15.md) for measured JHS reboot behavior, historical changes, the JMS launcher cause, and remaining verification limits. Private raw captures are kept under `.state`; `scripts/audit_stb.py` collects a fresh snapshot without modifying package states.
 
 ## What remains manual
 

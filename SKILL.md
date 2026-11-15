@@ -1,6 +1,6 @@
 ---
 name: jiostb-clean-setup
-description: Prepare, diagnose, enable network ADB, install a customized launcher, and make reversible package changes on supported Jio STBs using Windows, Technitium DNS, and GenieACS. Fully verified on JHSC200 v1 (JioOS 2.0) and JMSC200A (25.1.9); do not use for firmware flashing or bootloader unlocking.
+description: Prepare, diagnose, enable network ADB, install a customized launcher, and make reversible package changes on supported Jio STBs using Windows, Technitium DNS, and GenieACS. Includes tested JHSC200 v1 and JMSC200A 25.1.9 paths with model-specific persistence limits; do not use for firmware flashing or bootloader unlocking.
 ---
 
 # Jio STB Clean Setup
@@ -11,11 +11,12 @@ Work from this standalone repository. It contains the verified Windows ADB runti
 
 1. Record the exact model and firmware shown by the STB.
 2. For `JHSC200 v1` / JioOS 2.0, read [references/jhs.md](references/jhs.md).
-3. For `JMSC200A` (`25.1.9`), `JMSC200Av2`, or another JMS variant, read [references/jms.md](references/jms.md). Base `JMSC200A` (`25.1.9`) is fully verified end-to-end.
+3. For `JMSC200A` (`25.1.9`), `JMSC200Av2`, or another JMS variant, read [references/jms.md](references/jms.md). The tested base JMSC200A has authorized ADB and a reboot/cold-boot-tested Home redirect; extended idle behavior remains unverified.
 4. Read [references/troubleshooting.md](references/troubleshooting.md) when a readiness check, TLS handshake, ACS check-in, or ADB connection fails.
 5. Before disabling packages, read [references/package-policy.md](references/package-policy.md).
 6. For delayed or batched remote input, loss of wake after idle, or repeated iWedia crashes on verified JHS firmware, read [references/jhs-remote-performance.md](references/jhs-remote-performance.md).
 7. To build and adapt CleanYourTV as the JHS Home launcher, read [references/cleanyourtv-jhs.md](references/cleanyourtv-jhs.md). Do not apply its JMS C200A debloat example to JHS. If JMS restores the stock launcher after reboot, use the tested `stock_home_redirect` / `HomeKeyService` fallback in [references/jms.md](references/jms.md); disable/uninstall/suspend alone did not persist on the tested 25.1.9 box.
+8. For a detailed JHS/JMS comparison, package history, failed approaches, evidence limits, and robustness gates, read [references/device-audit-2026-11-15.md](references/device-audit-2026-11-15.md). Use `scripts/audit_stb.py --target IP:5555 --label jhs` (or `jms`) for private read-only capture; add `--reboot` only when a reboot is authorized. This captures evidence and does not apply repairs.
 
 ## Operational invariants
 

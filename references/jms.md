@@ -1,4 +1,4 @@
-# JMS family: provisional path
+# JMS family: tested setup with model-specific persistence limits
 
 ## Working Home redirect on JMSC200A 25.1.9
 
@@ -35,7 +35,7 @@ The original `stage1.sh` suspension workaround was also tested: `pm suspend --us
 
 Stock-launcher recovery if needed: `adb -s TARGET shell cmd package install-existing --user 0 com.iwedia.ui.rjio.launcher.reliance`, followed by `pm enable` and selecting its Home activity.
 
-This repository has not completed an end-to-end local validation on a JMS box. The earlier successful session used a JHSC200 v1 even though a JMSC model was initially discussed.
+The first successful session used JHSC200 v1 even though a JMSC model was initially discussed. Later local testing established the JMSC200A 25.1.9 ADB path and the Home redirect documented above. The original disable-only Home approach failed subsequent reboot tests; extended idle acceptance remains outstanding. See the [detailed comparison audit](device-audit-2026-11-15.md).
 
 Upstream reports JMSC200Av2 support on firmware `22.1.09`, `24.1.39`, and `25.1.9`. That does not establish support for base `JMSC200A`, a different hardware revision, or a later firmware.
 
@@ -70,13 +70,13 @@ Update this reference with observed facts, including failures. Do not generalize
 ## Observed facts on JMSC200A (RNOSBGMB021108F)
 
 1. **Certificate Chain**: Uses `acs_chain.pem` (RIL Root CA) on `https://acs.oss.jio.com:9443/ftacs-digest/ACS`.
-2. **CWMP Date Strictness**: Rejects ISO 8601 UTC `.000Z` date format with SOAP Fault 9003. Requires `YYYY-MM-DDTHH:MM:SS+00:00`. `tls/pass_front.py` dynamically normalizes this.
+2. **CWMP Date Strictness**: Rejects ISO 8601 UTC `.000Z` date format with SOAP Fault 9007. Requires `YYYY-MM-DDTHH:MM:SS+00:00`. `tls/pass_front.py` dynamically normalizes this.
 3. **GenieACS Declarative Cache**: If `Device.JioSTB.USB.USBDebugging` is cached as `true` in MongoDB while ADB is not actually listening, GenieACS will not send the command over the wire. Unset the cached parameter in `db.devices` before queuing.
 4. **Remote Wake Unusable**: Connection Request on port 7547 actively resets TCP (`RST`). Trigger check-ins via cold boot (unplug power 5s, reconnect) during the WAN-off window.
 
-## Full Verification on JMSC200A (Firmware 25.1.9) - PASSED
+## Initial setup observations on JMSC200A (Firmware 25.1.9)
 
-Completed full end-to-end enablement, hardening, and launcher replacement on **JMSC200A** (`E4FAE4-JMSC200A-RNOSBGMB021108F`), running firmware `JioSTB-JMSC200A-25.1.9` (`Jio/4KOTTSTB/MSTB:11/25.1.9/8:user/release-keys`):
+Initial enablement and launcher observations on **JMSC200A**, running firmware `JioSTB-JMSC200A-25.1.9` (`Jio/4KOTTSTB/MSTB:11/25.1.9/8:user/release-keys`), are retained below as history. The disable-only launcher result in item 4 did not survive later reboot testing; use the redirect at the top of this reference for the tested workaround:
 
 1. **Certificate Chain**: `acs_chain.pem` (Reliance RIL Root CA) accepted without TLS errors on port 9443.
 2. **Date Parser Rewriting**: Strict Jio date parser rejected ISO 8601 `.000Z` with Fault 9007; `tls/pass_front.py` rewritten to `+00:00`, which was accepted with `Status 0` for `Device.JioSTB.USB.DebugValidityDate` (valid through 2037).
