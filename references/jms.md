@@ -6,6 +6,8 @@ On the previously configured JMSC200A (25.1.9), the stock launcher reclaimed Hom
 
 ADB and Bluetooth recovered after reboot, existing optional package disables remained, and Android TV Network and accessory activities opened successfully. `stay_on_while_plugged_in=3` persisted; `screen_off_timeout` returned to `900000`. JHS standby and launcher persistence behavior cannot be assumed on JMS. Local evidence and the pre-change baseline are retained under ignored `.state`.
 
+The original `stage1.sh` suspension workaround was also tested: `pm suspend --user 0` followed by `pm disable-user --user 0` and selecting CleanYourTV. Before reboot the stock launcher reported `suspended=true` and `enabled=3`; after reboot it reported `suspended=false` and `enabled=1`, and Jio IntroActivity reclaimed Home. Suspension is therefore not a verified persistence fix on this box. Boot evidence is saved locally in `.state/jms-suspension-reset-boot.log`. If restoring Jio Home after a session workaround, run `pm unsuspend --user 0 com.iwedia.ui.rjio.launcher.reliance` before enabling it.
+
 Stock-launcher recovery if needed: `adb -s TARGET shell cmd package install-existing --user 0 com.iwedia.ui.rjio.launcher.reliance`, followed by `pm enable` and selecting its Home activity.
 
 This repository has not completed an end-to-end local validation on a JMS box. The earlier successful session used a JHSC200 v1 even though a JMSC model was initially discussed.
