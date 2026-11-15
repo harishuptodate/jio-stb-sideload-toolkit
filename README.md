@@ -165,6 +165,8 @@ Verify its screen and remote. If the Jio launcher reclaims Home on JHS, apply th
 
 The script stores the previous Home and stock-launcher state under `.state`; it never uninstalls the stock launcher.
 
+On JMSC200A 25.1.9, firmware may restore the stock launcher even after disable or suspension. Use the bundled CleanYourTV Home redirect helper described in [the JMS reference](references/jms.md#working-home-redirect-on-jmsc200a-2519). This returns to CleanYourTV at boot and on Home while keeping Jio's hardware service active. Verify the foreground screen after reboot; a successful installer command alone does not prove persistence.
+
 ### 9. Optional reversible app cleanup
 
 Read [the package policy](references/package-policy.md). Preview first:

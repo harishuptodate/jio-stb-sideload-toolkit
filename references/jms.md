@@ -1,5 +1,30 @@
 # JMS family: provisional path
 
+## Working Home redirect on JMSC200A 25.1.9
+
+Use this path when disable/uninstall/suspend is reset at boot. Inspection of this box's `JioService.apk` found `JioServiceExtendedImpl.initialSetup()` calling `checkAndActivateLauncherIfNeeded()`, which enables the stock launcher for a home product. Do not disable the whole JioService: it also handles hardware functions.
+
+The bundled CleanYourTV already provides `HomeKeyService` for exactly this situation. On 2026-11-15, a device-local theme overlay with the following keys and the accessibility helper enabled returned to CleanYourTV automatically after reboot; Home from Android TV Settings, Network settings, and SmartTube also returned to CleanYourTV:
+
+```json
+{"stock_home_redirect":"com.iwedia.ui.rjio.launcher.reliance","restore_key_services":true}
+```
+
+Before applying, back up an existing theme with `content read --uri content://com.gathin.tvhome.theme/config.json`, the enabled accessibility-service list, accessibility switch, and WRITE_SECURE_SETTINGS grant. Merge these keys into an existing config rather than replacing its other keys. A missing config reports ENOENT; other read failures must be resolved first. Save the JSON locally, push it to `/data/local/tmp/jms-home-redirect.json`, and apply:
+
+```powershell
+.\adb.exe -s TARGET shell 'content write --uri content://com.gathin.tvhome.theme/config.json < /data/local/tmp/jms-home-redirect.json'
+.\adb.exe -s TARGET shell pm grant com.gathin.tvhome android.permission.WRITE_SECURE_SETTINGS
+.\adb.exe -s TARGET shell am force-stop com.gathin.tvhome
+.\adb.exe -s TARGET shell am start -W -n com.gathin.tvhome/.MainActivity
+```
+
+Then append `com.gathin.tvhome/.HomeKeyService` to `settings secure enabled_accessibility_services` without removing existing services, and set `accessibility_enabled=1`. The tested box had an empty list. Leave the stock launcher enabled for this fallback. Confirm `dumpsys accessibility` shows the Home button helper bound, with no crashed service. Test actual foreground activity after boot before injecting Home or launching CleanYourTV; then test Home from another app.
+
+This is a foreground/Home redirect, not a permanent change to the firmware's resolved Home. Jio's initial logo or screen may appear briefly before Android binds the helper. A PC, ACS, and Docker are not required after configuration. A full physical power cycle and extended idle test remain separate acceptance checks. Physical remote behavior must also be checked by the owner.
+
+Rollback: restore the previous config through the provider (or delete only `config.json` if none existed), restore the previous enabled-service list and accessibility switch, and restart CleanYourTV. Revoke WRITE_SECURE_SETTINGS only if it was newly granted for this workaround. Keep JioService enabled.
+
 ## Persistence regression observed 2026-11-15
 
 On the previously configured JMSC200A (25.1.9), the stock launcher reclaimed Home after extended use. Reboot testing reproduced restoration of `com.iwedia.ui.rjio.launcher.reliance` after both `pm disable-user --user 0` and `pm uninstall -k --user 0`. Direct disabling of its `IntroActivity` is rejected with `SecurityException`. Selecting CleanYourTV as Home works for the current session only. Do not describe launcher boot persistence as verified on this firmware until the restoration mechanism is identified and a fix survives reboot.

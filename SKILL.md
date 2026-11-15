@@ -15,7 +15,7 @@ Work from this standalone repository. It contains the verified Windows ADB runti
 4. Read [references/troubleshooting.md](references/troubleshooting.md) when a readiness check, TLS handshake, ACS check-in, or ADB connection fails.
 5. Before disabling packages, read [references/package-policy.md](references/package-policy.md).
 6. For delayed or batched remote input, loss of wake after idle, or repeated iWedia crashes on verified JHS firmware, read [references/jhs-remote-performance.md](references/jhs-remote-performance.md).
-7. To build and adapt CleanYourTV as the JHS Home launcher, read [references/cleanyourtv-jhs.md](references/cleanyourtv-jhs.md). Do not apply its JMS C200A debloat example to JHS.
+7. To build and adapt CleanYourTV as the JHS Home launcher, read [references/cleanyourtv-jhs.md](references/cleanyourtv-jhs.md). Do not apply its JMS C200A debloat example to JHS. If JMS restores the stock launcher after reboot, use the tested `stock_home_redirect` / `HomeKeyService` fallback in [references/jms.md](references/jms.md); disable/uninstall/suspend alone did not persist on the tested 25.1.9 box.
 
 ## Operational invariants
 
