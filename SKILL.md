@@ -18,6 +18,12 @@ Work from this standalone repository. It contains the verified Windows ADB runti
 7. To build and adapt CleanYourTV as the JHS Home launcher, read [references/cleanyourtv-jhs.md](references/cleanyourtv-jhs.md). Do not apply its JMS C200A debloat example to JHS. If JMS restores the stock launcher after reboot, use the tested `stock_home_redirect` / `HomeKeyService` fallback in [references/jms.md](references/jms.md); disable/uninstall/suspend alone did not persist on the tested 25.1.9 box.
 8. For a detailed JHS/JMS comparison, package history, failed approaches, evidence limits, and robustness gates, read [references/device-audit-2026-11-15.md](references/device-audit-2026-11-15.md). Use `scripts/audit_stb.py --target IP:5555 --label jhs` (or `jms`) for private read-only capture; add `--reboot` only when a reboot is authorized. This captures evidence and does not apply repairs.
 
+## Manual and agent handoff
+
+Use [references/manual-setup.md](references/manual-setup.md) for the complete PowerShell procedure, expected outputs, offline handoff, JMS overlay/helper merge and rollback, and failure decisions. It is the human-facing end-to-end guide; do not leave a user to infer missing commands from historical notes. Load the exact model reference and package policy before device changes. For documentation-only work, do not connect to or modify an STB.
+
+For a resumed or already configured box, identify its current model, firmware, IP, Home resolution/foreground, helper state, and private change history first. Do not rerun ACS setup or all profiles merely because context was lost. IP is not device identity; DHCP and switching boxes can change it. Use the bundled ADB absolute path in automation.
+
 ## Operational invariants
 
 - Confirm the user owns or is authorized to modify the STB.
@@ -41,10 +47,24 @@ Work from this standalone repository. It contains the verified Windows ADB runti
 6. Repeat the WAN-off cold boot. Wait for both tasks to be acknowledged and TCP 5555 to open.
 7. Reconnect WAN. Connect ADB, accept the RSA prompt on the TV, and verify `adb get-state` returns `device`.
 8. Run `scripts/capture_baseline.ps1 -Target ...` before launcher or package changes.
-9. Build and install bundled CleanYourTV with `scripts/build_install_launcher.ps1 -Target ...` (automatically grants runtime location permission for Wi-Fi SSID resolution). Features include an icon-only gear Settings button, dynamic Wi-Fi & Bluetooth expanding pills on remote D-pad focus with glowing blue glass for connected states, and live hardware stats with Material vector logos. Test it before using `-DisableStockLauncher`. Use `scripts/disable_packages.ps1 -WhatIf` with `-Profile JhsCore` / `JhsOptional` or `-Profile JmsCore` / `JmsOptional` before applying a profile.
+9. Build and install bundled CleanYourTV with `scripts/build_install_launcher.ps1 -Target ...` (automatically grants runtime location permission for Wi-Fi SSID resolution). Features include an icon-only gear Settings button, dynamic Wi-Fi & Bluetooth expanding pills on remote D-pad focus with glowing blue glass for connected states, and live hardware stats with Material vector logos. Test rendering first. On tested JHS use `-DisableStockLauncher` only after rendering succeeds; on tested JMS configure the manual's merged Home redirect/helper instead of treating a failed resolved-Home check as installation failure. Use `scripts/disable_packages.ps1 -WhatIf` with `-Profile JhsCore` / `JhsOptional` or `-Profile JmsCore` / `JmsOptional` before applying a profile.
 10. Verify reboot, Home, remote, connected Wi-Fi/Bluetooth names, both pills' settings actions, Settings, JioStore/MyMusic if retained, and ADB reconnection.
-    If remote input remains delayed or standby cannot wake, run `scripts/jhs_remote_repair.ps1 -Action Diagnose` before changing more packages.
+    On verified JHS only, if remote input remains delayed or standby cannot wake, run `scripts/jhs_remote_repair.ps1 -Action Diagnose` before changing more packages.
 11. Put the STB back on DHCP/automatic DNS. Then run `scripts/cleanup_pc.ps1` to remove the temporary PC configuration.
+
+## Evidence and model-specific failure rules
+
+- Keep separate gates: current real INFORM, queued task, actual RPC/status 0, open 5555, authorized ADB, rendered launcher, resolved Home, foreground Home, reboot persistence, physical remote, and extended idle. None substitutes for another. Stop diagnosing at the first failed layer.
+- JHS uses the forged/eMudhra chain; JMS uses the RIL chain. Do not swap chains blindly. READY proves local listeners, not device trust or connectivity. Restore WAN for ordinary work; never depend on the online agent during a WAN-off handoff.
+- The captured JMS date fault is 9007. Inspect proxy normalization and the exact-device GenieACS cache before repeated retries. Cache repair must preserve/export the device record and unset only the demonstrated stale parameter, never wipe the database.
+- On tested JMS, JioService explicitly re-enables stock Home. Upstream suspension was initially omitted, then tested and observed to reset too. Disable/uninstall/suspend retries and Home role selection are not the working persistence solution. Keep JioService enabled. Use the manual's merged overlay plus HomeKeyService, preserve other accessibility services, and keep a rollback copy of the overlay, helper list, switch, and grant.
+- Call that JMS behavior a redirect workaround, not a root-cause/firmware fix. Resolved Home can remain Jio while foreground is CleanYourTV. Observe boot without injecting Home or launching the app. Force-stop can unbind the helper; repair/rebind it rather than disabling vendor hardware services.
+- The three JMS updater/scheduler omissions are now in JmsCore. Disabling them intentionally removes those functions; it does not cure JioService Home restoration or establish that an overnight firmware update occurred. JHS counterparts and vendor services differ.
+- JHS comedia repair requires the matching native crash evidence and acceptance of LiveTV/tuner loss. Do not copy it to JMS. Pairing, active BLE connection, injected navigation, physical latency, microphone capture, STT delivery, and idle wake are distinct checks.
+- Preserve normal animations unless requested otherwise. Use reported app ABI, not assumed CPU bitness. Do not promise Play Store certification or universal voice from sideloading. Keep failed feature experiments reversible and revert them when requested.
+- Retained-uninstalled lists cannot reconstruct fully deleted apps. Same package versions need not mean identical APKs. Do not benchmark models from different CPU sampling windows or equate read-only partition fullness with data exhaustion.
+
+At completion, report exactly what changed, which original-repo differences are intentional, which observed failures remain, where private rollback evidence is saved, and what was tested physically versus through ADB. Two software reboots and a physical power-cycle/Home check support the current JMS workaround; extended idle/overnight remains unverified until actually observed. Never label one successful launch as complete persistence verification.
 
 ## Stop conditions
 

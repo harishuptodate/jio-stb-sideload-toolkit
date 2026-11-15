@@ -2,6 +2,8 @@
 
 Verified on firmware `STB-JHSC200-11.3.46`. Revalidate after any firmware change.
 
+For the full ordered Windows procedure and rollback, use the [complete manual](manual-setup.md). JHS does not need the JMS redirect in the observed configuration; extended idle is not established by the comparison audit.
+
 ## Model-specific facts
 
 - ACS request path: `/ftacs-digest/ACS`

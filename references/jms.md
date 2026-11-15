@@ -1,5 +1,7 @@
 # JMS family: tested setup with model-specific persistence limits
 
+For sequential, copyable PowerShell setup, configuration merge, helper preservation, verification, and rollback, use the [complete manual](manual-setup.md). This reference explains the model-specific evidence.
+
 ## Working Home redirect on JMSC200A 25.1.9
 
 Use this path when disable/uninstall/suspend is reset at boot. Inspection of this box's `JioService.apk` found `JioServiceExtendedImpl.initialSetup()` calling `checkAndActivateLauncherIfNeeded()`, which enables the stock launcher for a home product. Do not disable the whole JioService: it also handles hardware functions.
@@ -27,7 +29,7 @@ Rollback: restore the previous config through the provider (or delete only `conf
 
 ## Persistence regression observed 2026-11-15
 
-On the previously configured JMSC200A (25.1.9), the stock launcher reclaimed Home after extended use. Reboot testing reproduced restoration of `com.iwedia.ui.rjio.launcher.reliance` after both `pm disable-user --user 0` and `pm uninstall -k --user 0`. Direct disabling of its `IntroActivity` is rejected with `SecurityException`. Selecting CleanYourTV as Home works for the current session only. Do not describe launcher boot persistence as verified on this firmware until the restoration mechanism is identified and a fix survives reboot.
+On the previously configured JMSC200A (25.1.9), the stock launcher reclaimed Home after extended use. Reboot testing reproduced restoration of `com.iwedia.ui.rjio.launcher.reliance` after both `pm disable-user --user 0` and `pm uninstall -k --user 0`. Direct disabling of its `IntroActivity` is rejected with `SecurityException`. Selecting CleanYourTV as Home works for the current session only. That disable-only method is not a persistence fix. The later investigation identified the enabling mechanism and verified the redirect above across reboot; the firmware policy remains in place.
 
 ADB and Bluetooth recovered after reboot, existing optional package disables remained, and Android TV Network and accessory activities opened successfully. `stay_on_while_plugged_in=3` persisted; `screen_off_timeout` returned to `900000`. JHS standby and launcher persistence behavior cannot be assumed on JMS. Local evidence and the pre-change baseline are retained under ignored `.state`.
 
@@ -67,12 +69,12 @@ Upstream reports JMSC200Av2 support on firmware `22.1.09`, `24.1.39`, and `25.1.
 
 Update this reference with observed facts, including failures. Do not generalize one JMS hardware revision to the whole family.
 
-## Observed facts on JMSC200A (RNOSBGMB021108F)
+## Observed facts on the tested JMSC200A
 
 1. **Certificate Chain**: Uses `acs_chain.pem` (RIL Root CA) on `https://acs.oss.jio.com:9443/ftacs-digest/ACS`.
 2. **CWMP Date Strictness**: Rejects ISO 8601 UTC `.000Z` date format with SOAP Fault 9007. Requires `YYYY-MM-DDTHH:MM:SS+00:00`. `tls/pass_front.py` dynamically normalizes this.
-3. **GenieACS Declarative Cache**: If `Device.JioSTB.USB.USBDebugging` is cached as `true` in MongoDB while ADB is not actually listening, GenieACS will not send the command over the wire. Unset the cached parameter in `db.devices` before queuing.
-4. **Remote Wake Unusable**: Connection Request on port 7547 actively resets TCP (`RST`). Trigger check-ins via cold boot (unplug power 5s, reconnect) during the WAN-off window.
+3. **GenieACS Declarative Cache**: If `Device.JioSTB.USB.USBDebugging` is cached as `true` in MongoDB while ADB is not actually listening, GenieACS will not send the command over the wire. After verifying this exact cache/RPC failure, export the record and unset only that cached parameter before requeuing; see [troubleshooting](troubleshooting.md#genieacs-skips-queued-setparametervalues-tasks).
+4. **ACS Connection Request unavailable** (not remote-control wake): Connection Request on port 7547 actively resets TCP (`RST`). Trigger check-ins via cold boot (unplug power 5s, reconnect) during the WAN-off window.
 
 ## Initial setup observations on JMSC200A (Firmware 25.1.9)
 

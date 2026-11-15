@@ -72,6 +72,8 @@ Do not delete the PC's ADB keys unless the on-screen authorization flow is irrec
 
 On verified JHS firmware, disable only the stock launcher for user 0 after the replacement launcher is installed and launchable. See `jhs.md`. Do not disable UI, Settings, TV input, or Bluetooth service packages.
 
+On tested JMS 25.1.9, JioService re-enables the stock launcher and the upstream suspend-plus-disable sequence also reset at reboot. Use the [JMS redirect procedure](manual-setup.md#7-jms-only-configure-the-home-redirect), preserving existing config/accessibility helpers. Do not disable JioService. Re-enabling stock Home is expected; loss of the helper binding is a different failure. The redirect is a workaround, not a firmware fix.
+
 ## Compose teardown cannot find a file
 
 Use this repository's explicit Compose file:
@@ -84,19 +86,31 @@ Do not add `-v` unless intentionally deleting the named Mongo data volume.
 
 ## Jio CWMP rejects SetParameterValues date format
 
-Jio STBs (notably the JMSC series) use a strict XML date parser that rejects standard ISO 8601 UTC dates containing `.000Z` (e.g. `2037-01-01T00:00:00.000Z`), causing the device to return a SOAP Fault 9003 (Invalid arguments). `tls/pass_front.py` automatically intercepts outgoing SOAP envelopes and rewrites UTC dates to numeric offset format `YYYY-MM-DDTHH:MM:SS+00:00` with matching `Content-Length`.
+Jio STBs (notably the JMSC series) use a strict XML date parser that rejects standard ISO 8601 UTC dates containing `.000Z` (e.g. `2037-01-01T00:00:00.000Z`), causing the device to return a captured SOAP Fault 9007 (invalid parameter value). `tls/pass_front.py` automatically intercepts outgoing SOAP envelopes and rewrites UTC dates to numeric offset format `YYYY-MM-DDTHH:MM:SS+00:00` with matching `Content-Length`.
 
 ## GenieACS skips queued SetParameterValues tasks
 
-GenieACS is declarative: if a device record in MongoDB (`db.devices`) already has `_value: true` cached for `Device.JioSTB.USB.USBDebugging`, GenieACS skips sending the CWMP RPC to the STB because it assumes the device already has that value. If the STB was cached as `true` during a previous partial run but port 5555 is not listening, clear the cached parameter in MongoDB:
+GenieACS is declarative: if a device record in MongoDB (`db.devices`) already has `_value: true` cached for `Device.JioSTB.USB.USBDebugging`, GenieACS skips sending the CWMP RPC to the STB because it assumes the device already has that value. If the STB was cached as `true` during a previous partial run but port 5555 is not listening, first export the exact device record and confirm that the RPC was actually skipped. Do not unset data merely because port 5555 is closed. Use the existing Mongo container interactively from PowerShell:
+
+```powershell
+docker exec -it genieacs-mongo mongosh genieacs
+```
+
+In the Mongo shell, replace the placeholder with this box's exact ID and save the printed record privately before the update:
+
+```javascript
+EJSON.stringify(db.devices.findOne({_id: '<DEVICE-ID>'}))
+```
+
+Then unset only the stale parameter:
 ```javascript
 db.devices.updateOne(
   {_id: '<DEVICE-ID>'},
   {$unset: {'Device.JioSTB.USB.USBDebugging': ''}}
 );
 ```
-Then re-queue ADB with `python scripts/queue_adb.py --device-id <DEVICE-ID>`.
+Type `exit` to leave the Mongo shell. Then re-queue ADB with `python scripts/queue_adb.py --device-id <DEVICE-ID>`.
 
 ## Control Centre traps back button
 
-`com.jio.controlcentre` (Jio Control Centre) implements an `onPreviewKeyEvent` handler in Jetpack Compose that intercepts `KEYCODE_BACK` and logs "back pressed - debounced, ignoring", trapping the user in the control panel unless the physical Home button is pressed. Disabling `com.jio.controlcentre` via `pm disable-user --user 0 com.jio.controlcentre` permanently removes the trap and frees approximately 135 MB of RAM without affecting other services.
+`com.jio.controlcentre` (Jio Control Centre) implements an `onPreviewKeyEvent` handler in Jetpack Compose that intercepts `KEYCODE_BACK` and logs "back pressed - debounced, ignoring", trapping the user in the control panel unless the physical Home button is pressed. Disabling `com.jio.controlcentre` via `pm disable-user --user 0 com.jio.controlcentre` avoided the observed trap. It intentionally removes that control panel; an earlier session measured roughly 135 MB, not a guaranteed memory saving on every box. Verify retained navigation and re-enable the package if required functions regress.

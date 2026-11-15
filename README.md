@@ -4,14 +4,20 @@ A standalone Windows toolkit and Codex skill for enabling persistent network ADB
 
 This repository contains everything the workflow consumes locally: Windows ADB, GenieACS Compose, the TLS proxy and certificate chains, setup and rollback scripts, modified CleanYourTV source, its Docker build environment, and the Codex skill. No second repository is required. Internet is still required initially for Docker images and ordinary downloads.
 
+## Start here
+
+For a complete human-operated procedure, use the [detailed manual for JHS and JMS](references/manual-setup.md). It covers every phase, expected output, model-specific Home behavior, rollback, and the mistakes observed during both setups. You do not need an AI agent. The shorter workflow below is a quick route; JMS users must follow its linked redirect procedure.
+
+For AI agents, start with [SKILL.md](SKILL.md), then the exact model guide and the manual. Do not infer completion from command exit codes or copy package states between models.
+
 ## Support status
 
 | Device | Firmware | Status |
 | --- | --- | --- |
-| JHSC200 v1 / JioOS 2.0 | `STB-JHSC200-11.3.46` | Completed and verified |
+| JHSC200 v1 / JioOS 2.0 | `STB-JHSC200-11.3.46` | ADB, launcher and reboot checks passed; extended idle not established by the audit |
 | JMSC200A | `25.1.9` | ADB and Home redirect tested across reboots and owner power cycle; extended idle pending |
 | JMSC200Av2 | `22.1.09`, `24.1.39`, `25.1.9` reported upstream | Provisional; stop on certificate or ACS differences |
-| Base JMSC200A and other variants | Any | Unverified; diagnostics only |
+| Other JMSC200A firmware and other variants | Other / unknown | Unverified; diagnostics only |
 
 Support is exact-model and exact-firmware specific. Do not treat JHS and JMS as interchangeable. This project does not flash firmware, unlock the bootloader, root Android, or bypass account/payment services.
 
@@ -57,7 +63,7 @@ Replace every example with your actual LAN values:
 
 Use `ipconfig` to find the PC's active IPv4 address. Reserve the STB address in the router or choose an unused address outside its DHCP pool. Keep the PC on normal router/DHCP DNS; only the STB points to the PC.
 
-## Complete verified JHS workflow
+## Short workflow (JHS; follow the JMS branch where indicated)
 
 Open an **elevated PowerShell** in the repository root:
 
@@ -77,6 +83,8 @@ Set the static IP, gateway, subnet mask, and DNS values described above. Keep in
   -StbIp 192.168.1.128 `
   -Model JHS
 ```
+
+Use `-Model JMS` for the tested JMS path. Technitium must already be installed/running separately; Docker Compose does not start it.
 
 This checks files and ports, prompts for Technitium credentials, backs up its listeners, configures only `acs.oss.jio.com`, replaces three firewall rules scoped to this PC/STB pair, starts GenieACS, and starts the JHS TLS proxy on 8443/9443. Defender Firewall stays enabled.
 
@@ -140,7 +148,7 @@ The `.state` baseline records properties, packages, disabled packages, Home, and
 
 ### 8. Build and install CleanYourTV
 
-The bundled source is customized for verified JHS:
+The bundled source was adapted on JHS and also installed/tested on the documented JMS:
 
 - Android TV Settings and Network screens bypass Jio's high-priority redirect;
 - Jio Settings remains under **long-press Settings → Native settings**;
@@ -189,6 +197,8 @@ Apply only after reviewing the exact list:
   -Profile JhsOptional
 ```
 
+For JMS substitute `JmsOptional`. To apply the update/management core policy, separately preview and review `JhsCore` or `JmsCore`; these are not implied by the optional-app example. JMS core includes the three previously omitted updater/scheduler packages. Those omissions are separate from JioService restoring Home.
+
 The script uses `pm disable-user --user 0`, records a report, and never uninstalls or clears apps. Re-enable one package with:
 
 ```powershell
@@ -226,7 +236,7 @@ Cleanup stops the tracked proxy, stops Compose without deleting Mongo data, remo
 
 ## Rollback
 
-Restore the stock launcher:
+For JMS, first [restore the saved redirect configuration and helper state](references/manual-setup.md#11-rollback). Enabling Jio Home alone will not remove its redirect. Restore the stock launcher:
 
 ```powershell
 .\adb.exe -s TARGET shell pm enable com.iwedia.ui.rjio.launcher.reliance
@@ -244,13 +254,17 @@ Re-enable packages individually using `pm enable`. Run `jhs_remote_repair.ps1 -A
 
 ## JMS path
 
-JMS is provisional. Use `-Model JMS`, which selects `acs_chain.pem`, and read [references/jms.md](references/jms.md). Stop on `unknown_ca`, a different ACS path, tasks acknowledged without port 5555, or an undocumented firmware. Do not guess with the JHS chain or package profile.
+The tested JMSC200A 25.1.9 has working ADB and a Home redirect workaround; extended idle remains pending. Other revisions/builds are provisional. Use `-Model JMS`, which selects `acs_chain.pem`, and follow the [detailed manual](references/manual-setup.md) and [JMS reference](references/jms.md). The original repo's suspension technique failed persistence testing on this exact box; our helper works around the boot policy without removing it. Stop on `unknown_ca`, a different ACS path, tasks acknowledged without port 5555, or an undocumented firmware. Do not guess with the JHS chain or package profile.
 
 ## Codex skill
 
 The repository root is the skill folder. Put it under `%USERPROFILE%\.codex\skills\jiostb-clean-setup` or create a junction to this checkout, then invoke `$jiostb-clean-setup` with the exact model, firmware, PC IP, and STB IP.
 
+Example request: `Use $jiostb-clean-setup from this checkout. My model/firmware is [...], PC IP is [...], STB IP is [...]. Prepare the laptop, tell me each physical step, use the correct model path, keep rollback state, and report which checks actually passed.`
+
 The skill guides the agent through preparation, pauses for each manual WAN/cold-boot step, queues only the ADB parameters, builds the included launcher, preserves rollback state, and cleans up. It cannot operate TV network menus, unplug hardware, accept RSA prompts, or validate physical-remote timing.
+
+For another AI agent, provide the checkout and ask it to read `SKILL.md` and the linked manual/model guide as project instructions. It needs local PowerShell/file access to execute the workflow; an agent without those tools can guide the human through the same commands. The skill does not depend on the previous chat or its private device IDs. Resume from the first unverified phase instead of replaying completed setup.
 
 ## Repository layout
 
