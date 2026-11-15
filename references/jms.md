@@ -21,7 +21,7 @@ Before applying, back up an existing theme with `content read --uri content://co
 
 Then append `com.gathin.tvhome/.HomeKeyService` to `settings secure enabled_accessibility_services` without removing existing services, and set `accessibility_enabled=1`. The tested box had an empty list. Leave the stock launcher enabled for this fallback. Confirm `dumpsys accessibility` shows the Home button helper bound, with no crashed service. Test actual foreground activity after boot before injecting Home or launching CleanYourTV; then test Home from another app.
 
-This is a foreground/Home redirect, not a permanent change to the firmware's resolved Home. Jio's initial logo or screen may appear briefly before Android binds the helper. A PC, ACS, and Docker are not required after configuration. A full physical power cycle and extended idle test remain separate acceptance checks. Physical remote behavior must also be checked by the owner.
+This is a foreground/Home redirect, not a permanent change to the firmware's resolved Home. Jio's initial logo or screen may appear briefly before Android binds the helper. A PC, ACS, and Docker are not required after configuration. Two ADB reboots passed. On 2026-11-15 the owner also confirmed that unplugging/reconnecting power booted into CleanYourTV and the physical Home button stayed in CleanYourTV. Extended idle behavior remains unverified.
 
 Rollback: restore the previous config through the provider (or delete only `config.json` if none existed), restore the previous enabled-service list and accessibility switch, and restart CleanYourTV. Revoke WRITE_SECURE_SETTINGS only if it was newly granted for this workaround. Keep JioService enabled.
 
