@@ -1,5 +1,13 @@
 # JMS family: provisional path
 
+## Persistence regression observed 2026-11-15
+
+On the previously configured JMSC200A (25.1.9), the stock launcher reclaimed Home after extended use. Reboot testing reproduced restoration of `com.iwedia.ui.rjio.launcher.reliance` after both `pm disable-user --user 0` and `pm uninstall -k --user 0`. Direct disabling of its `IntroActivity` is rejected with `SecurityException`. Selecting CleanYourTV as Home works for the current session only. Do not describe launcher boot persistence as verified on this firmware until the restoration mechanism is identified and a fix survives reboot.
+
+ADB and Bluetooth recovered after reboot, existing optional package disables remained, and Android TV Network and accessory activities opened successfully. `stay_on_while_plugged_in=3` persisted; `screen_off_timeout` returned to `900000`. JHS standby and launcher persistence behavior cannot be assumed on JMS. Local evidence and the pre-change baseline are retained under ignored `.state`.
+
+Stock-launcher recovery if needed: `adb -s TARGET shell cmd package install-existing --user 0 com.iwedia.ui.rjio.launcher.reliance`, followed by `pm enable` and selecting its Home activity.
+
 This repository has not completed an end-to-end local validation on a JMS box. The earlier successful session used a JHSC200 v1 even though a JMSC model was initially discussed.
 
 Upstream reports JMSC200Av2 support on firmware `22.1.09`, `24.1.39`, and `25.1.9`. That does not establish support for base `JMSC200A`, a different hardware revision, or a later firmware.
