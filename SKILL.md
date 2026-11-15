@@ -24,6 +24,12 @@ Use [references/manual-setup.md](references/manual-setup.md) for the complete Po
 
 For a resumed or already configured box, identify its current model, firmware, IP, Home resolution/foreground, helper state, and private change history first. Do not rerun ACS setup or all profiles merely because context was lost. IP is not device identity; DHCP and switching boxes can change it. Use the bundled ADB absolute path in automation.
 
+## Bundled support apps
+
+Monet (`com.klevico.monet`) and Shevery (`com.hamondev.shevery`) are shipped in `assets/apps/` with a pinned hash manifest. Install both after authorized ADB/baseline capture as part of every new setup: the normal `scripts/build_install_launcher.ps1` invokes `scripts/install_support_apps.ps1` automatically before installing/selecting CleanYourTV. If the main launcher installer stops before its install phase, do not assume support apps were installed; check their package IDs. For an existing configured box needing only these apps, run `scripts/install_support_apps.ps1 -Target ...` directly instead of reselecting Home.
+
+Keep CleanYourTV primary. Do not launch/select Monet, grant Monet WRITE_SECURE_SETTINGS, or enable Monet's Home helper during normal setup. Monet is an installed fallback only. Do not replace the JMS CleanYourTV redirect with Monet routing. Shevery installation alone is not service activation, root, universal Shizuku compatibility, or a guaranteed ADB recovery path. Do not grant broad permissions/AppOps, start its privileged service, or promise reboot persistence without a separate requested use case and actual verification. Follow [assets/apps/README.md](assets/apps/README.md) and the [manual support-app procedure](references/manual-setup.md#bundled-support-apps-monet-backup-and-shevery). Stop on checksum, signature, or version conflicts; never delete existing app data to force an update.
+
 ## Operational invariants
 
 - Confirm the user owns or is authorized to modify the STB.

@@ -1,0 +1,16 @@
+[
+  {
+    "file": "monet-launcher.apk",
+    "package": "com.klevico.monet",
+    "version": "1.1.0",
+    "bytes": 18836494,
+    "sha256": "afc34a7002fd8a2e79078b84fbe8b3c73b9f19753cdded27b2401c9ea8819214"
+  },
+  {
+    "file": "shevery-release.apk",
+    "package": "com.hamondev.shevery",
+    "version": "14.5.0",
+    "bytes": 8343474,
+    "sha256": "7c47f7a76505475f571c10f27b64adde6cbc05eb2370bfb425d2709dc4d4d681"
+  }
+]

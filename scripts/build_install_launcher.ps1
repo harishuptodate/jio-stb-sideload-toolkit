@@ -41,6 +41,7 @@ $stockDisabled = [bool]((& $adb -s $Target shell pm list packages -d com.iwedia.
 } | ConvertTo-Json | Set-Content -LiteralPath $backup -Encoding UTF8
 
 if ($PSCmdlet.ShouldProcess($Target, 'Install CleanYourTV and select it as Home')) {
+    & (Join-Path $PSScriptRoot 'install_support_apps.ps1') -Target $Target
     & $adb -s $Target install -r $apk
     if ($LASTEXITCODE -ne 0) { throw 'ADB failed to install CleanYourTV.' }
     & $adb -s $Target shell pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>$null

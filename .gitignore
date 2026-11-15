@@ -23,3 +23,5 @@ launcher/app/build/
 !tls/acs_chain.pem
 !tls/forged_chain.pem
 !tls/rilrootca.pem
+!assets/apps/monet-launcher.apk
+!assets/apps/shevery-release.apk

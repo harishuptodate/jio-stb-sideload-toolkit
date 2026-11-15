@@ -103,6 +103,33 @@ Check the reported model matches the selected path before changing packages. Bot
 
 Baseline files under `.state` can contain identifiers and accounts. Keep them private. A baseline captured after previous changes cannot reconstruct a factory state or fully deleted apps. For a fuller read-only capture use `python .\scripts\audit_stb.py --target $Target --label jhs` (use `jms` for JMS); `--reboot` additionally reboots, so omit it until you intend that test.
 
+### Bundled support apps: Monet backup and Shevery
+
+The standard launcher installer in step 6 now installs both pinned APKs from `assets/apps` before installing/selecting CleanYourTV. Monet 1.1.0 is a backup launcher; Shevery 14.5.0 is an optional privileged-API management helper. Neither is selected, launched, or granted extra privileges by setup. Existing Shevery removals in historical audits remain historical facts; new setups now install it by explicit user preference.
+
+For an existing setup, or to install these separately after your baseline without changing Home:
+
+```powershell
+.\scripts\install_support_apps.ps1 -Target $Target -WhatIf
+.\scripts\install_support_apps.ps1 -Target $Target
+.\adb.exe -s $Target shell pm list packages --user 0 com.klevico.monet
+.\adb.exe -s $Target shell pm list packages --user 0 com.hamondev.shevery
+```
+
+Each query must print the exact expected `package:...` line. The script verifies both APK hashes before installing either, uses `install -r`, and saves prior package dumps to `.state/support-apps-last-install.json`. Keep that report privately with this device's baseline before switching boxes or rerunning it, because the last-install report is overwritten. A signature mismatch or bundled version older than the installed version may fail: stop, preserve the installed app/data, and use a compatible signed artifact rather than adding `-d` or uninstalling to force it.
+
+Shevery is not an app store. Installing it does not start its privileged service, grant its requested permissions, or prove it can recover lost ADB. CleanYourTV and its HomeKeyService work independently of it. Enable/configure Shevery only for an actual compatible-app use case; do not copy the original repo's blanket permission/AppOps grants or ignore failed grants.
+
+To deliberately test Monet as a backup screen, use:
+
+```powershell
+.\adb.exe -s $Target shell am start -W -n com.klevico.monet/.HomeActivity
+```
+
+Check its rendering and navigation, then start `com.gathin.tvhome/.MainActivity` again through the same `am start -W -n` command. The fallback test is optional, not an automatic primary-Home change. On JMS, the existing CleanYourTV helper can still consume Home; making Monet the persistent primary is a separate recovery operation requiring the saved helper/config rollback first. Never point Home to Monet as part of ordinary setup.
+
+To remove an app newly added by this setup, use `adb shell pm uninstall --user 0 PACKAGE` through the bundled ADB and current target, substituting only `com.klevico.monet` or `com.hamondev.shevery`. This deletes that user's app data; do not use removal to resolve a failed update or remove a pre-existing app without intending that loss. If setup updated a pre-existing installation, uninstalling is not restoration of its earlier version/data. Do not uninstall CleanYourTV or alter the JMS helper while removing these optional apps.
+
 ## 6. Install the bundled launcher online
 
 ```powershell

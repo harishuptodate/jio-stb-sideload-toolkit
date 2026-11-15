@@ -11,3 +11,8 @@ The launcher directory contains a modified copy of CleanYourTV, Copyright
 The bundled Android Debug Bridge executables are Android SDK Platform-Tools
 components distributed by Google. Their applicable upstream license terms
 remain in effect; see https://developer.android.com/tools/releases/platform-tools.
+
+assets/apps contains unchanged Monet Launcher and Shevery APKs from the
+sideload-jiostb checkout. These third-party apps retain their authors' applicable
+terms and embedded notices; this repository's license does not relicense them.
+Their versions, provenance, and hashes are recorded in assets/apps/.

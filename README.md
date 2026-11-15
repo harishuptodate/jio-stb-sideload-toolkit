@@ -256,6 +256,19 @@ Re-enable packages individually using `pm enable`. Run `jhs_remote_repair.ps1 -A
 
 The tested JMSC200A 25.1.9 has working ADB and a Home redirect workaround; extended idle remains pending. Other revisions/builds are provisional. Use `-Model JMS`, which selects `acs_chain.pem`, and follow the [detailed manual](references/manual-setup.md) and [JMS reference](references/jms.md). The original repo's suspension technique failed persistence testing on this exact box; our helper works around the boot policy without removing it. Stop on `unknown_ca`, a different ACS path, tasks acknowledged without port 5555, or an undocumented firmware. Do not guess with the JHS chain or package profile.
 
+## Bundled Monet backup and Shevery
+
+Both APKs are included locally under [assets/apps](assets/apps/README.md); no separate download is needed. The standard `build_install_launcher.ps1` command installs Monet and Shevery before installing/selecting **CleanYourTV as primary Home**. Monet is an installed backup, not the default. Shevery is an optional management helper; installation does not start its privileged service or grant it elevated permissions. Neither app is required for CleanYourTV's JMS redirect.
+
+For an already configured box, add only these two apps without rebuilding or changing Home:
+
+```powershell
+.\scripts\install_support_apps.ps1 -Target 192.168.1.128:5555 -WhatIf
+.\scripts\install_support_apps.ps1 -Target 192.168.1.128:5555
+```
+
+Use the box's current IP. The installer checks pinned APK hashes, updates with `install -r`, and records prior package metadata privately. It stops on version/signature conflicts; do not uninstall existing data to bypass them. See the [manual](references/manual-setup.md#bundled-support-apps-monet-backup-and-shevery) for verification, deliberate backup use, and removal.
+
 ## Codex skill
 
 The repository root is the skill folder. Put it under `%USERPROFILE%\.codex\skills\jiostb-clean-setup` or create a junction to this checkout, then invoke `$jiostb-clean-setup` with the exact model, firmware, PC IP, and STB IP.
