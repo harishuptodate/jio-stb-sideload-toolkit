@@ -23,6 +23,14 @@ Support is exact-model and exact-firmware specific. Do not treat JHS and JMS as 
 
 See the [2026-11-15 device comparison audit](references/device-audit-2026-11-15.md) and [complete package inventory](references/device-package-inventory-2026-11-15.md) for measured JHS reboot behavior, historical changes, the JMS launcher cause, and remaining verification limits. Private raw captures are kept under `.state`; `scripts/audit_stb.py` collects a fresh snapshot without modifying package states.
 
+## How certificates enable the ADB setup
+
+Both models use the same local DNS -> TLS proxy -> GenieACS management-settings workflow. The certificate does not itself enable debugging: it is presented during the STB's management connection; GenieACS then supplies the debugging setting and validity date. That opens network ADB on STB port 5555 without a USB cable or a manual TV-menu toggle.
+
+On tested JHS, preparation selects `forged_chain.pem`, the eMudhra-related chain; tested JMS selects `acs_chain.pem`, containing RILROOTCA. RIL here refers to Reliance Industries Limited, not Android's Radio Interface Layer. These are bundled local proxy assets, not a live service request to eMudhra or Reliance. Acceptance by these particular STBs does not establish a genuinely CA-issued certificate or standards-compliant validation. We did not obtain either CA's private signing key.
+
+Read the [step-by-step mechanism and evidence limits](references/manual-setup.md#how-the-certificate-and-debugging-steps-fit-together) for exactly where the chain is selected, presented, and followed by debugging activation. Neither chain roots the box, unlocks its bootloader, or supplies Google TV certification.
+
 ## What remains manual
 
 An agent or script cannot safely perform these physical/router steps:
