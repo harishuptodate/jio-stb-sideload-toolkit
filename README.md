@@ -1,4 +1,4 @@
-# Jio STB Clean Setup
+# Jio STB Sideload Toolkit
 
 A standalone Windows toolkit and Codex skill for enabling persistent network ADB on supported Jio set-top boxes, installing the included CleanYourTV launcher, making reversible package changes, and restoring the PC afterward.
 
@@ -299,9 +299,9 @@ Use the box's current IP. The installer checks pinned APK hashes, updates with `
 
 ## Codex skill
 
-The repository root is the skill folder. Put it under `%USERPROFILE%\.codex\skills\jiostb-clean-setup` or create a junction to this checkout, then invoke `$jiostb-clean-setup` with the exact model, firmware, PC IP, and STB IP.
+The repository root is the skill folder. Put it under `%USERPROFILE%\.codex\skills\jio-stb-sideload-toolkit` or create a junction to this checkout, then invoke `$jio-stb-sideload-toolkit` with the exact model, firmware, PC IP, and STB IP.
 
-Example request: `Use $jiostb-clean-setup from this checkout. My model/firmware is [...], PC IP is [...], STB IP is [...]. Prepare the laptop, tell me each physical step, use the correct model path, keep rollback state, and report which checks actually passed.`
+Example request: `Use $jio-stb-sideload-toolkit from this checkout. My model/firmware is [...], PC IP is [...], STB IP is [...]. Prepare the laptop, tell me each physical step, use the correct model path, keep rollback state, and report which checks actually passed.`
 
 The skill guides the agent through preparation, pauses for each manual WAN/cold-boot step, queues only the ADB parameters, builds the included launcher, preserves rollback state, and cleans up. It cannot operate TV network menus, unplug hardware, accept RSA prompts, or validate physical-remote timing.
 

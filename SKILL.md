@@ -1,9 +1,9 @@
 ---
-name: jiostb-clean-setup
+name: jio-stb-sideload-toolkit
 description: Prepare, diagnose, enable network ADB, install a customized launcher, and make reversible package changes on supported Jio STBs using Windows, Technitium DNS, and GenieACS. Includes tested JHSC200 v1, JMSC200A 25.1.9, and JMSC200Av2-labelled 24.1.39 paths with model-specific persistence limits; do not use for firmware flashing or bootloader unlocking.
 ---
 
-# Jio STB Clean Setup
+# Jio STB Sideload Toolkit
 
 Work from this standalone repository. It contains the verified Windows ADB runtime, TLS/GenieACS assets, orchestration scripts, and modified CleanYourTV source. Do not request or depend on a separate `sideload-jiostb` or CleanYourTV checkout.
 
