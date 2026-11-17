@@ -6,6 +6,26 @@ This repository contains everything the workflow consumes locally: Windows ADB, 
 
 ## Start here
 
+This root README is the entry point to the complete information collected for the documented JHS/JMS workflow: setup, known mistakes, corrections, model-specific workarounds, verification, and rollback are included here or in the linked files. No previous chat or second repository is required. This does not guarantee support for every firmware or cover every possible future failure; remaining limits are documented.
+
+**Recommended: use an AI agent such as Claude, Codex, or Antigravity** with access to this checkout and a local terminal. Ask it to read `SKILL.md`, the manual, and the exact model guide before acting. It can perform laptop work and explain each physical step; you still operate the TV/router, accept prompts, and test the remote. Save the offline instructions before disconnecting WAN, because an online agent may become unreachable.
+
+Prefer to work without AI, or want to read and understand the procedure first? The [complete manual](references/manual-setup.md) provides sequential PowerShell commands, physical actions, timing, expected results, troubleshooting, and rollback.
+
+| Need | Reference |
+| --- | --- |
+| Complete manual procedure | [Manual](references/manual-setup.md) |
+| AI-agent workflow | [Skill](SKILL.md) |
+| Exact model differences | [JHS](references/jhs.md) / [JMS](references/jms.md) |
+| DNS, ports, certificates, task faults, and ADB problems | [Troubleshooting](references/troubleshooting.md) |
+| Package changes and their consequences | [Package policy](references/package-policy.md) |
+| Launcher features and settings | [CleanYourTV guide](references/cleanyourtv-jhs.md) |
+| Diagnosed JHS lag and standby workaround | [Remote guide](references/jhs-remote-performance.md) |
+| Monet backup and Shevery artifacts | [Bundled apps](assets/apps/README.md) |
+| Observed failures, root-cause evidence, and limits | [Audit](references/device-audit-2026-11-15.md) / [package inventory](references/device-package-inventory-2026-11-15.md) |
+
+**Curated by [harishuptodate](https://github.com/harishuptodate).** This standalone toolkit brings together the information collected during both STB setups, fills documented information gaps in the original repo, and records errors encountered, corrections, workarounds, and potential failure conditions so the next human or agent need not rediscover them. Original workflow and launcher authors retain their credit and licenses; see [Attribution](#attribution) and [NOTICE](NOTICE). Curation is not a claim that every unknown firmware behavior has been eliminated.
+
 For a complete human-operated procedure, use the [detailed manual for JHS and JMS](references/manual-setup.md). It covers every phase, expected output, model-specific Home behavior, rollback, and the mistakes observed during both setups. You do not need an AI agent. The shorter workflow below is a quick route; JMS users must follow its linked redirect procedure.
 
 For AI agents, start with [SKILL.md](SKILL.md), then the exact model guide and the manual. Do not infer completion from command exit codes or copy package states between models.
@@ -108,11 +128,11 @@ python .\scripts\offline_watch.py --stb-ip 192.168.1.128
 
 Wait for `READY`, then:
 
-1. Disconnect only the router WAN/internet uplink.
+1. Disconnect only the router WAN/internet uplink, then wait about 30 seconds.
 2. Keep router power and Wi-Fi on.
 3. Unplug STB power, wait five seconds, and reconnect it.
-4. Wait for `NEW/UPDATED INFORM` or the STB offline/error screen.
-5. Reconnect WAN.
+4. Keep WAN disconnected for at least four minutes after STB power-on and until boot settles; record `NEW/UPDATED INFORM`. An error screen alone is not success.
+5. Reconnect WAN only after that minimum/settled boot, then diagnose missing results online. See the [recommended timing rule](references/manual-setup.md#offline-timing-rule-for-both-models).
 6. Stop the recorder with `Ctrl+C` after the check-in; the report is still saved.
 
 Open GenieACS at `http://localhost:3000` and copy the exact `_id` whose `_lastInform` changed. The bundled local Compose defaults are `admin` / `admin`; change them if the service will remain exposed.
@@ -135,7 +155,7 @@ Run a fresh recorder:
 python .\scripts\offline_watch.py --stb-ip 192.168.1.128
 ```
 
-Wait for `READY`, disconnect only WAN, cold-boot again, and wait for the new check-in. The desired result is task acknowledgement and `STB TCP 5555: OPEN`. Reconnect WAN immediately afterward. Internet may stay connected from this point because ADB is LAN traffic.
+Wait for `READY`, disconnect only WAN, wait about 30 seconds, then cold-boot again with five seconds of power-off. Keep WAN disconnected for at least four minutes after STB power-on and until boot settles, recording the new check-in. The desired result is task acknowledgement and `STB TCP 5555: OPEN`. Reconnect WAN after the minimum/settled boot, even if results are missing and need online diagnosis. An early check-in does not shorten the recommended wait, and elapsed time does not prove success. Internet may stay connected for subsequent ADB work because it is LAN traffic.
 
 ### 6. Connect and authorize ADB
 

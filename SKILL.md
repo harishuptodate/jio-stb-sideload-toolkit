@@ -36,6 +36,8 @@ Keep CleanYourTV primary. Do not launch/select Monet, grant Monet WRITE_SECURE_S
 
 ## Operational invariants
 
+For both WAN-off discovery and task-delivery boots, provide the human the [manual timing rule](references/manual-setup.md#offline-timing-rule-for-both-models): wait for READY, remove uplink, pause about 30 seconds, power off STB for five seconds, power on with WAN off, and wait at least four minutes from power-on and until boot settles before reconnecting WAN. An early check-in does not shorten this curator-recommended wait; elapsed time does not prove success. This is operating guidance, not a measured firmware requirement. Save the handoff before losing internet.
+
 - Confirm the user owns or is authorized to modify the STB.
 - Keep the router powered and Wi-Fi/LAN active. Disconnect only the WAN/uplink during the interception boot window.
 - Keep the PC online during preparation, downloads, and ordinary ADB work.
@@ -52,9 +54,9 @@ Keep CleanYourTV primary. Do not launch/select Monet, grant Monet WRITE_SECURE_S
 1. Have the user manually set the STB static IP, gateway, subnet, and DNS 1 to the PC LAN IP. Confirm the PC itself remains on normal router/DHCP DNS.
 2. If local PowerShell scripts are blocked, run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`. From elevated PowerShell run `scripts/prepare.ps1` with PC IP, STB IP, and model. It performs preflight, exact Technitium configuration, scoped firewall rules, GenieACS startup, and proxy startup. Resolve every reported problem.
 3. Run `scripts/offline_watch.py` and wait for `READY`.
-4. Disconnect the router WAN/uplink, cold-boot the STB, and wait for a new ACS check-in. Reconnect WAN after the check-in or after the STB reaches its offline error screen.
+4. Follow the manual's offline timing rule: remove WAN, pause about 30 seconds, cold-boot with five seconds power-off, then keep WAN off for at least four minutes after power-on and until boot settles. Record the new ACS check-in; restore WAN after that window for continuation or diagnosis.
 5. Identify the new GenieACS device and run `scripts/queue_adb.py`. This queues only ADB enablement and its validity date.
-6. Repeat the WAN-off cold boot. Wait for both tasks to be acknowledged and TCP 5555 to open.
+6. Repeat the same WAN-off timing rule for task delivery. Record both task acknowledgements and TCP 5555 opening; do not reconnect before the minimum four-minute/settled-boot window or treat elapsed time as successful delivery.
 7. Reconnect WAN. Connect ADB, accept the RSA prompt on the TV, and verify `adb get-state` returns `device`.
 8. Run `scripts/capture_baseline.ps1 -Target ...` before launcher or package changes.
 9. Build and install bundled CleanYourTV with `scripts/build_install_launcher.ps1 -Target ...` (automatically grants runtime location permission for Wi-Fi SSID resolution). Features include an icon-only gear Settings button, dynamic Wi-Fi & Bluetooth expanding pills on remote D-pad focus with glowing blue glass for connected states, and live hardware stats with Material vector logos. Test rendering first. On tested JHS use `-DisableStockLauncher` only after rendering succeeds; on tested JMS configure the manual's merged Home redirect/helper instead of treating a failed resolved-Home check as installation failure. Use `scripts/disable_packages.ps1 -WhatIf` with `-Profile JhsCore` / `JhsOptional` or `-Profile JmsCore` / `JmsOptional` before applying a profile.

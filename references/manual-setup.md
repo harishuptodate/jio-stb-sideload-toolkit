@@ -73,17 +73,29 @@ Do not rerun `start_proxy.ps1` over an existing tracked proxy. If switching mode
 
 ## 3. Discover the box during an offline boot
 
+### Offline timing rule for both models
+
+Apply this sequence to **every WAN-off interception boot**, including discovery and ADB-task delivery:
+
+1. Start the recorder and wait for **READY**.
+2. Disconnect only the WAN/uplink. Keep router power, Wi-Fi/LAN, PC, DNS, proxy, and Docker running. **Wait about 30 seconds** so the uplink is down before rebooting the STB.
+3. Unplug STB power, wait five seconds, then reconnect power with WAN still disconnected.
+4. **Wait at least four minutes from reconnecting STB power and until boot settles.** Keep recording. Do not reconnect WAN early because a logo, offline error screen, first INFORM, or open ADB port appears.
+5. After the minimum four minutes and settled boot, reconnect WAN. If expected results are missing, preserve the report and diagnose online; elapsed time is not proof of success. Do not leave the household offline indefinitely.
+
+The 30-second pause and four-minute minimum are the curator's recommended operating procedure to avoid rushing the interception window, not an experimentally established firmware requirement or a guarantee that tasks executed. The recorder's ten-minute limit does not require ten minutes offline. Ordinary ADB work and WAN-connected reboot tests do not require this offline timing.
+
 In a second PowerShell window, with the actual IP substituted:
 
 ```powershell
 python .\scripts\offline_watch.py --stb-ip 192.168.1.128
 ```
 
-Wait for **READY**. Then disconnect only the router WAN/uplink, leaving router power, Wi-Fi, PC, and local services running. Power off the STB, wait five seconds, and reconnect power. Do not reconnect WAN immediately after plugging in STB power: allow the offline boot/check-in first.
+Wait for **READY**, remove only WAN/uplink, and wait about 30 seconds. Leave router power, Wi-Fi, PC, and local services running. Power off the STB for five seconds, then reconnect power. Keep WAN disconnected for at least four minutes after power-on and until boot settles, as described above. Do not reconnect immediately after the logo or first check-in.
 
-Watch for **NEW/UPDATED INFORM**. An initial device snapshot is historical data, not a new connection. `Local services reachable` proves only a PC-side check. If the TV reaches an offline error screen without a check-in, reconnect WAN and diagnose; do not treat the screen as success. There is no need to wait ten minutes after the relevant result. `Ctrl+C` saves the recorder report. A short dry run before reboot proves only that recording starts.
+Watch for **NEW/UPDATED INFORM**. An initial device snapshot is historical data, not a new connection. `Local services reachable` proves only a PC-side check. If the TV reaches an offline error screen without a check-in, finish the minimum four-minute boot/settling window, then reconnect WAN and diagnose; do not treat the screen as success. There is no need to wait ten minutes after the relevant result, but an early result does not shorten the recommended four-minute minimum. `Ctrl+C` saves the recorder report. A short dry run before reboot proves only that recording starts.
 
-Reconnect WAN after the check-in, or after the failed boot attempt so you can diagnose online. An online AI assistant may become unreachable during WAN disconnection; follow the saved instructions locally and restore WAN before requesting analysis. Open `http://localhost:3000`, sign in to the bundled local UI (defaults `admin` / `admin`), and copy the exact device `_id` whose last-inform time just changed. Preserve private device IDs in local state, not public issues.
+Reconnect WAN after at least four minutes from STB power-on and a settled boot, whether the attempt succeeded or needs online diagnosis. An online AI assistant may become unreachable during WAN disconnection; follow the saved instructions locally and restore WAN before requesting analysis. Open `http://localhost:3000`, sign in to the bundled local UI (defaults `admin` / `admin`), and copy the exact device `_id` whose last-inform time just changed. Preserve private device IDs in local state, not public issues.
 
 ## 4. Queue ADB online, then deliver it offline
 
@@ -95,7 +107,7 @@ python .\scripts\queue_adb.py --device-id 'EXACT-DEVICE-ID-FROM-THIS-CHECK-IN'
 
 This requests only USB debugging and its validity date. HTTP acceptance/queued output is **not** a successful device write. Do not run the original `stage1.sh` afterward: it also queues downgrade/FOTA settings and applies a different installation/removal policy.
 
-Start a new recorder. Wait for READY; disconnect WAN; cold-boot the STB again. Wait for a new check-in, both SetParameterValues responses with **status 0**, and ideally `STB TCP 5555: OPEN`. Reconnect WAN. The proxy log is `.state/pass_front.log`; the recorder prints its report location. If only an INFORM appears, inspect task responses/faults instead of repeating blind boots. Ordinary ADB, app installation, and launcher tests can now use WAN normally.
+Start a new recorder. Repeat the same timing rule: wait for READY, remove WAN, wait about 30 seconds, then cold-boot with five seconds of power-off. Keep WAN off for at least four minutes after power-on and until boot settles. Record a new check-in, both SetParameterValues responses with **status 0**, and ideally `STB TCP 5555: OPEN`. Reconnect WAN after that minimum/settled boot; an early result does not shorten the wait, and a timed wait does not prove success. The proxy log is `.state/pass_front.log`; the recorder prints its report location. If only an INFORM appears, inspect task responses/faults online instead of repeating blind boots. Ordinary ADB, app installation, and launcher tests can now use WAN normally.
 
 JMS-specific failures: the observed date fault was **9007**, not 9003. The bundled proxy converts `.000Z` to numeric `+00:00` on the wire. A cached true debugging value can suppress a repeated RPC even when 5555 is closed; use the narrowly scoped cache recovery in [troubleshooting](troubleshooting.md#genieacs-skips-queued-setparametervalues-tasks). Do not delete the Mongo database. ACS Connection Request failure on port 7547 is unrelated to physical-remote wake; the tested JMS needed a cold boot to initiate check-in.
 

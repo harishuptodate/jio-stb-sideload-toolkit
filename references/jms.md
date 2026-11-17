@@ -51,7 +51,7 @@ Upstream reports JMSC200Av2 support on firmware `22.1.09`, `24.1.39`, and `25.1.
 .\scripts\start_proxy.ps1 -Model JMS
 ```
 
-4. Run the recorder and perform one WAN-off cold boot.
+4. Run the recorder and follow the [manual timing rule](manual-setup.md#offline-timing-rule-for-both-models): after READY remove WAN, wait about 30 seconds, power off for five seconds, then keep WAN off for at least four minutes after power-on and until boot settles before reconnecting. Repeat this timing for task delivery; elapsed time alone is not proof of success.
 5. Stop on `unknown_ca`. Do not switch to the JHS/eMudhra chain as a guess.
 6. Record the ACS path, TLS error or accepted chain, GenieACS device identity format, task response, and TCP 5555 behavior.
 7. Queue only the two ADB parameters using `queue_adb.py` after the device really checks in.

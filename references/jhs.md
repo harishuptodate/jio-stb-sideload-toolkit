@@ -18,6 +18,8 @@ The default `acs_chain.pem` failed on the verified JHS box with `TLSV1_ALERT_UNK
 
 ## Start and observe
 
+For both discovery and task delivery, follow the [manual timing rule](manual-setup.md#offline-timing-rule-for-both-models): after READY remove WAN, wait about 30 seconds, power off for five seconds, then keep WAN disconnected for at least four minutes after STB power-on and until boot settles before reconnecting. This is recommended operating timing, not proof of task success; an early INFORM does not shorten it.
+
 Use PowerShell from this skill repository:
 
 ```powershell
