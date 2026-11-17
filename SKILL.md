@@ -51,6 +51,8 @@ For both WAN-off discovery and task-delivery boots, provide the human the [manua
 
 ## Preferred workflow
 
+Before static-network setup, explain the manual's [MyMusic/USB settings-entry workaround](references/manual-setup.md#reach-static-ipdns-settings-through-mymusic-and-usb) if the ordinary UI hides those controls. MyMusic is not assumed preinstalled: the human installs it from JioStore while online, then inserts a pendrive and follows MyMusic Settings → Eject USB → Internal Storage → Apps → Settings → Network → connected Wi-Fi → Advanced IP Settings → Static. Preserve original DHCP values and re-enter cleared fields; never format the drive. Do not claim USB is never needed, or assume ADB/CleanYourTV is already available to open settings before initial enablement. Store login/access is distinct from the management/ADB phase; stop if store/menu access is unavailable rather than promising a bypass or guessing another firmware's route.
+
 1. Have the user manually set the STB static IP, gateway, subnet, and DNS 1 to the PC LAN IP. Confirm the PC itself remains on normal router/DHCP DNS.
 2. If local PowerShell scripts are blocked, run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`. From elevated PowerShell run `scripts/prepare.ps1` with PC IP, STB IP, and model. It performs preflight, exact Technitium configuration, scoped firewall rules, GenieACS startup, and proxy startup. Resolve every reported problem.
 3. Run `scripts/offline_watch.py` and wait for `READY`.

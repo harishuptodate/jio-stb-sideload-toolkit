@@ -25,7 +25,7 @@ What the tests establish is that these exact firmware clients accepted their res
 
 Record model, hardware revision, and firmware from the TV. The tested paths are **JHSC200 / STB-JHSC200-11.3.46** and **JMSC200A / 25.1.9**. JMSC200Av2 is not the same model as base JMSC200A; other builds remain provisional. An earlier conversation label of 24.1.39 is not evidence that the tested JMS was running that firmware.
 
-Install the prerequisites listed in the README: Python 3, Git, Docker Desktop with a working Linux-container engine, and Technitium DNS Server. Technitium is a separate Windows service; Compose starts GenieACS and MongoDB, **not Technitium**. The launcher also uses Docker to build; Docker is not needed on the TV or permanently on the PC afterward. No pendrive is used or formatted in this procedure. This installs apps and configuration on Jio's Android firmware; it does not replace it with certified Google TV or add Google Play certification.
+Install the prerequisites listed in the README: Python 3, Git, Docker Desktop with a working Linux-container engine, and Technitium DNS Server. Technitium is a separate Windows service; Compose starts GenieACS and MongoDB, **not Technitium**. The launcher also uses Docker to build; Docker is not needed on the TV or permanently on the PC afterward. A USB pendrive is needed for the MyMusic settings-entry workaround below when ordinary settings hide static IP/DNS; it is not used to transfer the ADB-installed apps and must not be formatted. This installs apps and configuration on Jio's Android firmware; it does not replace it with certified Google TV or add Google Play certification.
 
 Download/extract the complete standalone repository. In File Explorer, open its folder in an administrator PowerShell window. Confirm the directory contains `adb.exe`, `SKILL.md`, `scripts`, `tls`, and `launcher`. Run:
 
@@ -43,7 +43,21 @@ $Model = 'JHS' # Use JMS for the tested JMS path
 
 Replace both IP values with yours. `docker version` must show a Server section, not only Client. Start Docker Desktop if it does not. Open `http://127.0.0.1:5380` and ensure the Technitium administrator login works. An unreachable page is a service problem; opening a URL does not start DNS.
 
-Keep PC and STB on the same ordinary LAN, not isolated guest Wi-Fi. Reserve the STB address or choose an unused address outside the DHCP pool. On the TV set static IP to `$StbIp`, subnet mask to your LAN mask (example `255.255.255.0`, or prefix length `24` if requested), gateway to the router (example `192.168.1.1`), DNS 1 to `$PcIp`, and DNS 2 blank/`0.0.0.0` if accepted. Avoid a public secondary DNS that can bypass interception. Keep **PC DNS and router DNS unchanged**. Leave a Jio login screen alone; the verified JHS ADB path did not require account login. Do not infer app subscription/account access from ADB success.
+### Reach static IP/DNS settings through MyMusic and USB
+
+Keep internet connected during this preparation; do not begin the WAN-off window yet. MyMusic is **not assumed preinstalled**. On a fresh box:
+
+1. Open **JioStore**, search for **MyMusic**, and install it. Complete the store's normal setup/login if required. This is separate from management/ADB enablement, which did not require account login on the tested JHS. If JioStore is inaccessible, stop and resolve that access; this guide does not provide an account bypass. Do not assume the preinstalled JioBeats app is the same package.
+2. Insert a USB pendrive into the STB. No files need to be copied onto it for this menu workaround. Use a drive without important data as a precaution; **do not choose Format, Erase, or adopt as internal storage**. Formatting is not part of this procedure.
+3. Open **MyMusic → Settings → Eject USB**.
+4. In the resulting storage/settings UI, select **Internal Storage → Apps → Settings** (the gear-icon stock Android Settings app).
+5. Open **Network → your connected Wi-Fi network → Advanced IP Settings** and change **DHCP to Static**.
+6. Before switching, note the DHCP IP, gateway, mask/prefix, and DNS values. Some firmware clears fields on selecting Static. If that happens, return to DHCP, note the values, then switch back and re-enter the correct values; never save a blank gateway/subnet.
+7. Enter the intended STB IP, gateway, mask/prefix, and laptop IP as DNS 1 using the network guidance below. Save and confirm that the STB reconnects to Wi-Fi. This step changes the **STB only**, not the router or laptop DNS.
+
+This menu workaround is described in the original project's Windows guide; exact screens can vary by model/firmware. If Eject USB, Internal Storage, Apps, or Advanced IP Settings is missing, stop and record the exact model/firmware and screen rather than selecting destructive storage options. If the normal STB network UI already exposes static IP/DNS, use it directly; MyMusic/USB is only the settings-entry workaround. Do not rely on an ADB settings command or the custom launcher before ADB and the launcher have been installed.
+
+Keep PC and STB on the same ordinary LAN, not isolated guest Wi-Fi. Reserve the STB address or choose an unused address outside the DHCP pool. On the TV set static IP to `$StbIp`, subnet mask to your LAN mask (example `255.255.255.0`, or prefix length `24` if requested), gateway to the router (example `192.168.1.1`), DNS 1 to `$PcIp`, and DNS 2 blank/`0.0.0.0` if accepted. Avoid a public secondary DNS that can bypass interception. Keep **PC DNS and router DNS unchanged**. Do not infer app subscription/account access from ADB success.
 
 Keep the PC on this adapter/address, awake, powered, and without a network-changing VPN during preparation and interception. If its Wi-Fi/address changes, stop and update the STB DNS, PC bindings, and scoped firewall configuration before retrying. Each PowerShell window has separate variables; repeat the assignments above in a new window.
 

@@ -73,7 +73,7 @@ Do not turn off the router or Wi-Fi during an offline window.
 - Technitium DNS Server at `http://127.0.0.1:5380`
 - Access to the STB network menu and the router WAN/uplink
 
-A USB drive and Jio account login are not required for the verified JHS ADB path. If the STB reaches a Jio login screen, leave it there.
+ADB installation uses Wi-Fi/LAN rather than a USB cable, but a USB pendrive is needed if you use the MyMusic workaround to reach hidden network settings. MyMusic is not assumed preinstalled: install it from JioStore first while internet is connected. The management/ADB phase itself did not require Jio account login on the tested JHS; JioStore access may separately require its normal setup/login. Do not bypass those requirements.
 
 ## Example network values
 
@@ -100,6 +100,8 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
 ### 1. Configure the STB network manually
+
+If ordinary settings do not expose static IP/DNS, first install **MyMusic from JioStore** (do not assume it is already installed). Insert a USB pendrive, then open **MyMusic → Settings → Eject USB → Internal Storage → Apps → Settings** (gear icon). Navigate to **Network → your connected Wi-Fi → Advanced IP Settings → DHCP → Static**. Enter the network values below; set DNS 1 to the laptop's current IPv4 address. Do not select Format/Erase. See the [complete MyMusic/USB procedure](references/manual-setup.md#reach-static-ipdns-settings-through-mymusic-and-usb) for cleared fields, missing menus, and account-access limits.
 
 Set the static IP, gateway, subnet mask, and DNS values described above. Keep internet connected. Do not cold-boot or disconnect WAN yet. Confirm the PC still has internet and still uses normal DNS.
 
