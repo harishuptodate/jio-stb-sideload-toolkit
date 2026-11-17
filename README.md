@@ -10,7 +10,7 @@ This root README is the entry point to the complete information collected for th
 
 **Recommended: use an AI agent such as Claude, Codex, or Antigravity** with access to this checkout and a local terminal. Ask it to read `SKILL.md`, the manual, and the exact model guide before acting. It can perform laptop work and explain each physical step; you still operate the TV/router, accept prompts, and test the remote. Save the offline instructions before disconnecting WAN, because an online agent may become unreachable.
 
-Prefer to work without AI, or want to read and understand the procedure first? The [complete manual](references/manual-setup.md) provides sequential PowerShell commands, physical actions, timing, expected results, troubleshooting, and rollback.
+If you prefer to work without AI, or want to read and understand the procedure first? The [complete manual](references/manual-setup.md) provides sequential PowerShell commands, physical actions, timing, expected results, troubleshooting, and rollback.
 
 | Need | Reference |
 | --- | --- |
@@ -24,7 +24,7 @@ Prefer to work without AI, or want to read and understand the procedure first? T
 | Monet backup and Shevery artifacts | [Bundled apps](assets/apps/README.md) |
 | Observed failures, root-cause evidence, and limits | [Audit](references/device-audit-2026-11-15.md) / [package inventory](references/device-package-inventory-2026-11-15.md) |
 
-**Curated by [harishuptodate](https://github.com/harishuptodate).** This standalone toolkit brings together the information collected during both STB setups, fills documented information gaps in the original repo, and records errors encountered, corrections, workarounds, and potential failure conditions so the next human or agent need not rediscover them. Original workflow and launcher authors retain their credit and licenses; see [Attribution](#attribution) and [NOTICE](NOTICE). Curation is not a claim that every unknown firmware behavior has been eliminated.
+**Curated by [harishuptodate/](https://github.com/harishuptodate/jio-stb-sideload-toolkit).** This standalone toolkit brings together the information collected during both STB setups, fills documented information gaps in the original repo, and records errors encountered, corrections, workarounds, and potential failure conditions so the next human or agent need not rediscover them. Original workflow and launcher authors retain their credit and licenses; see [Attribution](#attribution) and [NOTICE](NOTICE). Curation is not a claim that every unknown firmware behavior has been eliminated.
 
 For a complete human-operated procedure, use the [detailed manual for JHS and JMS](references/manual-setup.md). It covers every phase, expected output, model-specific Home behavior, rollback, and the mistakes observed during both setups. You do not need an AI agent. The shorter workflow below is a quick route; JMS users must follow its linked redirect procedure.
 
@@ -204,7 +204,7 @@ Verify its screen and remote. If the Jio launcher reclaims Home on JHS, apply th
 
 The script stores the previous Home and stock-launcher state under `.state`; it never uninstalls the stock launcher.
 
-On JMSC200A 25.1.9, firmware may restore the stock launcher even after disable or suspension. Use the bundled CleanYourTV Home redirect helper described in [the JMS reference](references/jms.md#working-home-redirect-on-jmsc200a-2519). This returns to CleanYourTV at boot and on Home while keeping Jio's hardware service active. Verify the foreground screen after reboot; a successful installer command alone does not prove persistence.
+For JMS, complete [manual step 7](references/manual-setup.md#7-jms-only-configure-the-home-redirect) by default after rendering succeeds: back up and merge `stock_home_redirect=com.iwedia.ui.rjio.launcher.reliance`, `restore_key_services=true`, and `home_long_press_home=true`, then enable/rebind HomeKeyService while preserving other accessibility services. Direct Home-key handling prevents the rapid-Home flash observed with the older redirect; held Home also opens CleanYourTV instead of the vendor long-press action. Keep stock Home and JioService enabled. This is a workaround around firmware routing, not permanent stock-launcher removal. See [the JMS evidence](references/jms.md) for the distinct 25.1.9 and 24.1.39 results. Verify foreground startup and all three keys/helper binding after reboot, then physical short/rapid/held Home, volume and a cold boot; keep extended idle separate. A successful installer command alone does not prove persistence. JHS keeps its separate disable-stock-launcher path.
 
 ### 9. Optional reversible app cleanup
 

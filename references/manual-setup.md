@@ -181,13 +181,13 @@ Verify rendering and remote navigation before any stock-launcher change. Preserv
 
 The observed JHS retained this disabled state after reboot and resolved CleanYourTV as Home. Do not enable the JMS helper on JHS just to make the configurations look identical.
 
-**JMSC200A 25.1.9:** go to step 7. Its JioService restores Jio Home at startup. Disable-only, uninstall-for-user, suspend-plus-disable, and Home selection did not persist; disabling an individual protected component returned SecurityException. The original repo explicitly proposes suspension, but our test showed it cleared at reboot. Do not disable all of JioService: it also handles hardware. The helper below is a **workaround**, not removal of the firmware policy. The three updater disables in step 8 do not fix this root cause.
+**JMS:** go to step 7 as a normal setup step after rendering succeeds. JioService restores Jio Home at startup on both the tested JMSC200A 25.1.9 and separate JMSC200Av2-labelled 24.1.39 box. Disable-only did not persist on either; uninstall-for-user and suspend-plus-disable also failed on the earlier 25.1.9 box. Protected component disabling was rejected. Do not disable all of JioService: it also handles hardware. The helper below is a **workaround**, not removal of the firmware policy. The three updater disables in step 8 do not fix this root cause. Revalidate other exact JMS variants before changes.
 
 The customized UI provides Android Settings/Network/Bluetooth shortcuts, Native Jio settings through long-press Settings, normal animations, default-on CPU/RAM/storage statistics with a RAM/storage toggle, and expanding Wi-Fi/Bluetooth names. It remains an app launcher on Jio firmware. Installing it does not make every Android settings page, voice API, or app supported.
 
 ## 7. JMS only: configure the Home redirect
 
-Use only after the installed launcher opens correctly. These PowerShell blocks back up and merge an existing JSON overlay, preserve other accessibility helpers, and enable the bundled HomeKeyService. Run them in order in one window. Do not reuse a backup from another box.
+Use only after the installed launcher opens correctly. This is the default JMS setup, including direct Home-key handling to prevent the brief Jio screen during rapid physical Home presses; do not wait for that symptom before configuring it. These PowerShell blocks back up and merge an existing JSON overlay, preserve other accessibility helpers, and enable the bundled HomeKeyService. Run them in order in one window. Do not reuse a backup from another box. Keep JHS on its separate launcher-disable path.
 
 First capture the existing state; stop for unexpected content-provider errors:
 
@@ -206,6 +206,7 @@ $HadGrant = $PackageDump -match 'android.permission.WRITE_SECURE_SETTINGS: grant
     ConvertTo-Json -Depth 30 | Set-Content -LiteralPath "$Backup\before.json" -Encoding UTF8
 $Config | Add-Member -NotePropertyName stock_home_redirect -NotePropertyValue 'com.iwedia.ui.rjio.launcher.reliance' -Force
 $Config | Add-Member -NotePropertyName restore_key_services -NotePropertyValue $true -Force
+$Config | Add-Member -NotePropertyName home_long_press_home -NotePropertyValue $true -Force
 $Merged = $Config | ConvertTo-Json -Depth 30
 [IO.File]::WriteAllText("$Backup\config.json", $Merged, [Text.UTF8Encoding]::new($false))
 ```
@@ -233,11 +234,13 @@ $Joined = $Existing -join ':'
 .\adb.exe -s $Target shell content read --uri content://com.gathin.tvhome.theme/config.json
 ```
 
-Inspect command output for permission/provider errors even when exit code is zero. Accessibility must show the Home button service **bound**, with no crashed services, and the overlay must contain both keys. If the stock launcher was previously uninstalled for user 0, first restore it with `cmd package install-existing --user 0 com.iwedia.ui.rjio.launcher.reliance` through ADB; do not uninstall it as part of this procedure.
+Inspect command output for permission/provider errors even when exit code is zero. Accessibility must show the Home button service **bound**, with no crashed services, and the overlay must contain all three keys with the values above. If the stock launcher was previously uninstalled for user 0, first restore it with `cmd package install-existing --user 0 com.iwedia.ui.rjio.launcher.reliance` through ADB; do not uninstall it as part of this procedure.
 
 Force-stop is used once above, before enabling/rebinding the helper. Later force-stopping CleanYourTV can remove its accessibility binding. If that happens, start CleanYourTV and re-enable its Home button accessibility service, preserving other services. Do not repeatedly force-stop it to troubleshoot a boot redirect.
 
 After reboot Android's **resolved Home may still be Jio**, while the actual foreground automatically becomes CleanYourTV. Check both separately in step 9. A brief initial Jio screen is possible. This workaround was observed across software reboots and an owner power-cycle/Home test; extended idle remains unverified. It needs no running PC-side ACS/proxy after setup.
+
+Direct Home-key handling is already included above. It consumes Home and opens CleanYourTV on release; holding Home also opens CleanYourTV instead of the vendor's long-press action. The owner of the separate JMSC200Av2-labelled `24.1.39` box confirmed no rapid-Home flash and later confirmed a physical cold boot, rapid Home and volume were good. See [the separate firmware investigation](jms.md#separate-jmsc200av2--24139-investigation) for evidence and limits. For an already configured JMS box missing this key, repeat step 7 with a **new backup for that box** and rebind the helper; do not overwrite its old rollback evidence or rerun ACS/package setup. Step 11 restores the saved overlay and helper state.
 
 ## 8. Review model-specific package changes
 
@@ -281,6 +284,8 @@ The command itself performs one reboot. Repeat only for the planned second test;
 Compare package states with your own baseline/change reports, not another owner's package count. JHS should retain disabled stock Home and resolve CleanYourTV in the tested configuration. JMS may resolve Jio but must automatically foreground CleanYourTV with the helper bound. Empty crash output is a snapshot, not proof that no future crash can occur.
 
 Then test Home from Android Settings, Network, Bluetooth pairing, Jio Native Settings, SmartTube/TizenTube if installed, Downloader if installed, JioStore, and MyMusic if retained. Test the physical remote, volume, Wi-Fi/Bluetooth names and shortcuts, stats toggle, normal animations, and your required playback/audio functions. ADB-injected keys and app launch success cannot verify physical input latency, microphone, DRM, login, or playback.
+
+For JMS, read back all three overlay keys and confirm HomeKeyService is bound after each reboot. From Settings or another app, physically press Home once, press it rapidly 10–20 times, and hold it once: each should return to or remain in CleanYourTV, with no Jio flash during rapid presses. Check volume and D-pad navigation as well. Repeat the physical Home/volume checks after the owner cold-boots the box. If these fail, preserve foreground/helper/crash evidence and restore this box's saved overlay/helper state before another experiment; do not disable JioService or unrelated hardware services.
 
 Leave it idle for the intended normal interval and test wake/Home with the real remote, including overnight if that is the intended usage. Record elapsed time and the result. The existing audit does **not** establish overnight reliability for either model. If Home fails after idle, collect foreground, helper binding, package states, crash/power logs before repairing it; distinguish helper loss from stock re-enable. Never call the JMS redirect a firmware/root-cause fix.
 

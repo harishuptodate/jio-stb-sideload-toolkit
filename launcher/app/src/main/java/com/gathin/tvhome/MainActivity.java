@@ -2303,7 +2303,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // at any moment without the reader tripping over it.
         Handler bg = new Handler(statsThread.getLooper());
         statsBg = bg;
-                bg.post(new Runnable() {
+        bg.post(new Runnable() {
             @Override
             public void run() {
                 if (statsBg != bg) return;
